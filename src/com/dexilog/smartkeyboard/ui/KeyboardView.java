@@ -679,7 +679,7 @@ public class KeyboardView extends View implements View.OnClickListener {
 		return false;
 	}
 
-	@Override
+	//@Override
 	public void setCustomSmileys(boolean customSmileys) {
 		this.customSmileys = customSmileys;
 	}

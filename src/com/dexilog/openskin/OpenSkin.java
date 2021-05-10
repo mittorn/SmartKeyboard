@@ -285,8 +285,15 @@ public class OpenSkin {
 				mLabelFont = loadFont(fonts, "label");
 			}
 			mIsValid = true;
+
 		} catch (Throwable e) {
 			// Something bad happened, isValid() will return false
+			e.printStackTrace();
+		}
+
+		try {
+			mZipFile.close(); // should be closed
+		} catch( IOException e ) {
 			e.printStackTrace();
 		}
 	}

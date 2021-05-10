@@ -28,22 +28,22 @@ public class VibratorSettings {
     static final int DEFAULT_LEGACY_DURATION = 1;
 
     SharedPreferences prefs;
-    int vibratorDurationMs;
+    float vibratorDurationMs;
 
     public VibratorSettings(SharedPreferences prefs) {
         this.prefs = prefs;
-        vibratorDurationMs = prefs.getInt(PREF_VIBRATE_DURATION_MS, -1);
+        vibratorDurationMs = prefs.getFloat(PREF_VIBRATE_DURATION_MS, -1);
         if (vibratorDurationMs == -1) {
             convertLegacyPreference();
         }
     }
 
-    public int getDurationMs() {
+    public float getDurationMs() {
         return vibratorDurationMs;
     }
 
     private void convertLegacyPreference() {
-        Integer legacyDuration = prefs.getInt(PREF_VIBRATE_DURATION, -1);
+        float legacyDuration = prefs.getFloat(PREF_VIBRATE_DURATION, -1.f);
         SharedPreferences.Editor editor = prefs.edit();
         if (legacyDuration != -1) {
             editor.remove(PREF_VIBRATE_DURATION);
@@ -51,7 +51,7 @@ public class VibratorSettings {
             legacyDuration = DEFAULT_LEGACY_DURATION;
         }
         vibratorDurationMs = 10 + 5 * legacyDuration;
-        editor.putInt(PREF_VIBRATE_DURATION_MS, vibratorDurationMs);
+        editor.putFloat(PREF_VIBRATE_DURATION_MS, vibratorDurationMs);
         editor.commit();
     }
 

@@ -110,7 +110,7 @@ public class Calibration extends Activity implements OnKeyboardActionListener {
 		// Vibrator
 		mVibrateOn = sp.getBoolean(KeyboardPreferences.PREF_VIBRATE_ON, true);
 		if (mVibrateOn) {
-			mVibrateDuration = new VibratorSettings(sp).getDurationMs();
+			mVibrateDuration = (int)new VibratorSettings(sp).getDurationMs();
 		}
 
 		// Load the current skin

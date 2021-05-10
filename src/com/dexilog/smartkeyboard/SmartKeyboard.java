@@ -339,7 +339,7 @@ public class SmartKeyboard extends InputMethodService implements
 		keyboardPreferences.initialize(sp);
 		mVibrateOn = sp.getBoolean(KeyboardPreferences.PREF_VIBRATE_ON, false);
 		if (mVibrateOn) {
-			mVibrateDuration = new VibratorSettings(sp).getDurationMs();
+			mVibrateDuration = (int)(new VibratorSettings(sp).getDurationMs());
 			mSpaceAlert = sp.getBoolean(KeyboardPreferences.PREF_SPACE_ALERT, false);
 		}
 		mSoundOn = sp.getBoolean(KeyboardPreferences.PREF_SOUND_ON, false);
