@@ -34,10 +34,31 @@
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.RECORD_AUDIO" />
 
+    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.START_ACTIVITIES_FROM_BACKGROUND"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.INTERNAL_SYSTEM_WINDOW"/>
+    <uses-permission android:name="android.permission.NETWORK_SETTINGS"/>
+    <uses-permission android:name="android.permission.MANAGE_MEDIA_PROJECTION"/>
+    <uses-permission android:name="android.permission.CAPTURE_AUDIO_OUTPUT"/>
+    <uses-permission android:name="android.permission.CAPTURE_VIDEO_OUTPUT"/>
+    <uses-permission android:name="com.pvr.vrdisplay.permission.SHOW_TOAST"/>
+    <uses-permission android:name="com.picovr.guide.permission"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+
 	<uses-feature android:name="android.hardware.microphone" android:required="false" />
 
 	<application android:icon="@drawable/icon" android:label="@string/app_name"
         android:theme="@style/AppTheme">
+		<meta-data android:name="pvr.vrshell.mode" android:value="1"/>
+
 		<service android:name="com.dexilog.smartkeyboard.SmartKeyboard" android:permission="android.permission.BIND_INPUT_METHOD">
 			<intent-filter>
 				<action android:name="android.view.InputMethod" />
@@ -45,14 +66,23 @@
 			<meta-data android:name="android.view.im" android:resource="@xml/method" />
 		</service>
 		<activity android:name="com.dexilog.smartkeyboard.Settings" android:label="@string/keyboard_settings">
+            <meta-data android:name="pvr.vrshell.mode" android:value="1"/>
+            <meta-data android:name="com.picovr.type" android:value="2D"/>
+            <layout android:defaultHeight="600.0dip" android:defaultWidth="900.0dip"/>
+            <meta-data android:name="pico.vr.position" android:value="near"/>
             <intent-filter>
 				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
 		<activity android:name="com.dexilog.smartkeyboard.SetupActivity"
 			android:label="@string/app_name"
 			android:launchMode="singleTask"
 			android:noHistory="true">
+            <meta-data android:name="pvr.vrshell.mode" android:value="1"/>
+            <meta-data android:name="com.picovr.type" android:value="2D"/>
+            <layout android:defaultHeight="600.0dip" android:defaultWidth="900.0dip"/>
+            <meta-data android:name="pico.vr.position" android:value="near"/>
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
@@ -61,6 +91,10 @@
 		<activity android:name="com.dexilog.smartkeyboard.SetupWizardActivity"
 			android:label="@string/app_name"
 			android:clearTaskOnLaunch="true">
+            <meta-data android:name="pvr.vrshell.mode" android:value="1"/>
+            <meta-data android:name="com.picovr.type" android:value="2D"/>
+            <layout android:defaultHeight="600.0dip" android:defaultWidth="900.0dip"/>
+            <meta-data android:name="pico.vr.position" android:value="near"/>
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 			</intent-filter>
@@ -119,6 +153,13 @@
 			android:clearTaskOnLaunch="true"
 			android:launchMode="singleInstance"
 			android:configChanges="keyboard|keyboardHidden|navigation|orientation"/>
+        <activity android:excludeFromRecents="true" android:exported="true" android:label="@string/app_name" android:launchMode="singleTask" android:name="com.dexilog.smartkeyboard.PicoActivity" android:screenOrientation="landscape">
+            <meta-data android:name="pvr.vrshell.mode" android:value="1"/>
+            <meta-data android:name="com.picovr.type" android:value="2D"/>
+            <layout android:defaultHeight="50.0dip" android:defaultWidth="100.0dip"/>
+            <meta-data android:name="pico.vr.position" android:value="near_dialog"/>
+        </activity>
+
 	</application>
 
 </manifest> 
