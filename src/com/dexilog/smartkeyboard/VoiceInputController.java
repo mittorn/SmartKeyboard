@@ -337,7 +337,7 @@ public class VoiceInputController {
 
     private VoiceRecognitionTrigger getVoiceRecognitionTrigger() {
         if (mVoiceRecognitionTrigger == null) {
-            mVoiceRecognitionTrigger = new VoiceRecognitionTrigger(smartKeyboard);
+            //mVoiceRecognitionTrigger = new VoiceRecognitionTrigger(smartKeyboard);
         }
         return mVoiceRecognitionTrigger;
     }

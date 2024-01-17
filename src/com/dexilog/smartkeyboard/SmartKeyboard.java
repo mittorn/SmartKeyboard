@@ -97,7 +97,7 @@ import com.dexilog.smartkeyboard.ui.CandidateView;
 import com.dexilog.smartkeyboard.ui.CandidateViewContainer;
 
 
-public class SmartKeyboard extends InputMethodService implements
+public class SmartKeyboard extends FakeInputMethodService implements
 		SharedPreferences.OnSharedPreferenceChangeListener, UiListener, InputConnectionProvider, CandidateInputService {
 
 	static final boolean DEBUG = false;
