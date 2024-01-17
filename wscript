@@ -1,0 +1,180 @@
+#!/usr/bin/env python
+# encoding: utf-8
+# a1batross, 2019
+import os
+
+def options(opt):
+	# opt.load('java')
+	print('opt android')
+	opt.load('compiler_optimizations xcompile compiler_cxx compiler_c cxx android')
+	grp = opt.add_option_group('Debug options')
+	grp.add_option('--strip-all', action='store_true', dest='STRIP_ALL', default = False,
+		help = 'Strip all non-export symbols (incomplete stacktraces)')
+	grp.add_option('--enable-minidbg', action='store_true', dest='ENABLE_MINIDBG', default = False,
+		help = 'Store debug symbols in compressed section (gdb only)')
+	grp.add_option('--disable-strip', action='store_true', dest='DISABLE_STRIP', default = False,
+		help = 'Do not split symbols at all')
+	grp.add_option('--enable-gdb', action='store_true', dest='ENABLE_GDB', default = False,
+		help = 'Package GDB')
+	grp.add_option('--enable-dwz', action='store_true', dest='ENABLE_DWZ', default = False,
+		help = 'Optimize dwarf')
+
+	return
+
+def configure(conf):
+	conf.env.D8_DEBUG = True
+	#conf.options.BUILD_TYPE != 'release'
+	conf.find_program('xz')
+	try:
+		conf.find_program('dwz')
+	except:
+		pass
+
+	conf.load('compiler_optimizations xcompile compiler_cxx compiler_c cxx android')
+	conf.env.DISABLE_STRIP = conf.options.DISABLE_STRIP
+	conf.env.ENABLE_MINIDBG = conf.options.ENABLE_MINIDBG
+	conf.env.ENABLE_GDB = conf.options.ENABLE_GDB
+	conf.env.ENABLE_DWZ = conf.options.ENABLE_DWZ
+	if conf.options.STRIP_ALL:
+		conf.env.STRIPFLAGS = '--strip-all'
+	else:
+		conf.env.STRIPFLAGS = '--strip-debug'
+	conf.find_program('OBJCOPY')
+from waflib import TaskGen, Task, Build, Logs
+
+# HACK: collect all our libraries and modify jni task
+libs = []
+tgens = []
+jnifiles = {}
+REMOVE_SECTIONS_COMMON='-R .gdb_index -R .eh_frame_hdr -R .eh_frame -R .got.plt -R .comment -R .hash -R .note.gnu.gold-version -R .got -R .dynamic -R .ARM.exidx -R .ARM.extab -R .plt -R .rel.plt -R .rel.dyn -R .rela.dyn -R .rela.plt -R .dynsym -R .dynstr -R .ARM.attributes -R .init_array -R .data.rel.ro -R .data.rel.ro.local -R .fini_array -R .bss -R .data -R .rodata'.split(' ')
+REMOVE_SECTIONS_CLANG = []
+REMOVE_SECTIONS_GCC = ['-R', '.text']
+class strip_task(Task.Task):
+	run_str = '${OBJCOPY} ${STRIPFLAGS} -R .comment ${SRC[0].abspath()} ${TGT[0].abspath()}'
+	vars = ['OBJCOPY', 'STRIPFLAGS']
+	def keyword(self):
+		return 'Stripping'
+
+class dwz_task(Task.Task):
+	run_str = '${DWZ} --odr --out ${TGT[0].abspath()} ${SRC[0].abspath()}'
+	def keyword(self):
+		return 'Optimizing debug'
+
+class dbg_task(Task.Task):
+	run_str = '${OBJCOPY} --only-keep-debug ${SRC[0].abspath()} ${TGT[0].abspath()}'
+	def keyword(self):
+		return 'Splitting debug'
+
+class dbgm_task(Task.Task):
+	run_str = '${OBJCOPY} ${REMOVE_SECTIONS} ${SRC[0].abspath()} ${TGT[0].abspath()}'
+	vars = ['OBJCOPY', 'REMOVE_SECTIONS']
+	
+	def keyword(self):
+		return 'Stripping unneeded sections'
+
+class xz_task(Task.Task):
+	run_str = '${XZ} -e9 < ${SRC[0].abspath()} > ${TGT[0].abspath()}'
+	def keyword(self):
+		return 'Compressing debug'
+
+class minidbg_task(Task.Task):
+	run_str = '${OBJCOPY} --add-section .gnu_debugdata=${SRC[1].abspath()} ${SRC[0].abspath()} ${TGT[0].abspath()}'
+	def keyword(self):
+		return 'Adding .gnu_debugdata'
+jni_task = None
+
+def build(bld):
+
+	bld.shlib(
+		source   = bld.path.ant_glob(['jni/smartkbd/*.cpp']),
+		target   = 'smartkbddict',
+		features = 'cxx cxxshlib',
+		install_path = 'lib/arm64-v8a',
+	)
+
+	tsk = bld(features = 'android javac',
+		srcdir = 'src',
+		compat = '1.7',
+		name = 'sk',
+		keystore = bld.path.find_node('debug.keystore'),
+		debug = bld.env.D8_DEBUG,
+		exclude_classes = ['Term.class', 'Term??.class'] if bld.env.ENABLE_GDB else ['TermView*.class', 'Term*.class', 'DebugService*.class', 'PaintRenderer*.class', 'TranscriptScreen*.class', 'FloatingLayout*.class'],
+		target_api = 29)
+	tsk.env.append_unique('JAVACFLAGS', ['-target', '1.7'])
+
+
+#	if hasattr(bld,'write_compilation_database'):
+#		return
+	local_env = bld.env
+
+	@TaskGen.feature('cshlib','cxxshlib')
+	@TaskGen.after_method('apply_android_soname')
+	def copy_lib(self):
+		print('copy lib')
+		lib = self.link_task.outputs[0]
+		self.env.XZ = local_env.XZ
+		self.env.DWZ = local_env.DWZ
+		self.env.STRIPFLAGS = local_env.STRIPFLAGS
+		self.env.REMOVE_SECTIONS = REMOVE_SECTIONS_COMMON
+		if self.env.CC_NAME == 'clang':
+			# gdb don't need .text section on arm
+			self.env.REMOVE_SECTIONS += REMOVE_SECTIONS_CLANG
+		else:
+			self.env.REMOVE_SECTIONS += REMOVE_SECTIONS_GCC
+		last_task = self.link_task
+		if local_env.DISABLE_STRIP:
+			strip_output = lib
+		else:
+			strip_output = lib.parent.make_node('lib' + self.name + '.stripped.so')
+			last_task = self.create_task('strip_task', lib, strip_output)
+		if local_env.DWZ and local_env.ENABLE_DWZ:
+			dwz_output = lib.parent.make_node('lib' + self.name + '.dwz.so')
+			self.create_task('dwz_task', lib, dwz_output)
+			dbg_input = dwz_output
+		else:
+			dbg_input = lib
+		if local_env.ENABLE_MINIDBG:
+			dbg_output = lib.parent.make_node('lib' + self.name + '.dbg')
+			self.create_task('dbg_task', dbg_input, dbg_output)
+			dbgm_output = lib.parent.make_node('lib' + self.name + '.dbgm')
+			self.create_task('dbgm_task', dbg_output, dbgm_output)
+			xz_output = lib.parent.make_node('lib' + self.name + '.dbgm.xz')
+			self.create_task('xz_task', dbgm_output, xz_output)
+			minidbg_output = lib.parent.make_node('lib' + self.name + '.minidbg.so')
+			last_task = self.create_task('minidbg_task', [strip_output, xz_output], minidbg_output)
+			lib = minidbg_output
+		else:
+			lib = dbg_input if local_env.ENABLE_GDB else strip_output
+		libs.append(lib)
+		tgens.append(self.name)
+		jnifiles[lib] = self.install_path + '/lib' + self.name + '.so'
+		print('add lib')
+		Logs.debug('add_lib ' +  str(lib) +' ' + str(self.install_path + '/lib' + self.name + '.so'))
+		jni_task.inputs += libs
+		jni_task.jnifiles.update(jnifiles)
+		jni_task.set_run_after(last_task)
+		
+
+	@TaskGen.feature('android')
+	@TaskGen.after_method('apply_d8')
+	def pack_native_library(self):
+		print('pack_lib')
+		# print('APPLY_D8', libs, jnifiles)
+		#self.apkjni_task.set_run_after(self.d8_task)
+		#self.apkdex_task.set_run_after(self.apkjni_task)
+		
+		#self.apkjni_task.inputs += libs
+		#self.apkjni_task.jnifiles.update(jnifiles)
+		#self.apkjni_task.set_run_after(last_task)
+		global jni_task
+		jni_task = self.apkjni_task
+		print('native libraries: ' + str(libs) +' ' + str(jnifiles))
+
+#			libs.clear()
+
+	# force post all shlibs after processing decorators to make all nodes registered
+	if not bld.targets:
+		for t in tgens:
+			bld.get_tgen_by_name(t).post()
+		tsk.post()
+
