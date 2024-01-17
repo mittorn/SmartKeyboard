@@ -100,8 +100,8 @@ import com.dexilog.smartkeyboard.ui.CandidateViewContainer;
 public class SmartKeyboard extends FakeInputMethodService implements
 		SharedPreferences.OnSharedPreferenceChangeListener, UiListener, InputConnectionProvider, CandidateInputService {
 
-	static final boolean DEBUG = false;
-	static final boolean TRACE = false;
+	static final boolean DEBUG = true;
+	static final boolean TRACE = true;
 	public static final String TAG = "SmartKeyboard";
 	public static final String ACTION_RECOGNITION_DONE = "net.cdeguet.smartkeyboardpro.RECOGNITION_DONE";
 
@@ -177,7 +177,7 @@ public class SmartKeyboard extends FakeInputMethodService implements
 	public int mSwipeDown;
 	private int mOpacity;
 	private float mVolume = -1.0f;
-	public boolean mDebug = false;
+	public boolean mDebug = true;
 	private boolean mAlwaysSuggest;
 	private boolean mAlwaysCaps;
 	public boolean mMicButton;
@@ -350,7 +350,7 @@ public class SmartKeyboard extends FakeInputMethodService implements
 		voiceInputController.mVoiceBest = sp.getBoolean(KeyboardPreferences.PREF_VOICE_BEST, false);
 		voiceInputController.mLegacyVoice = sp.getBoolean(KeyboardPreferences.PREF_LEGACY_VOICE, false);
 		mSmileyMode = Integer.parseInt(sp.getString(KeyboardPreferences.PREF_SMILEY_KEY, "0"));
-		mDebug = sp.getBoolean(KeyboardPreferences.PREF_DEBUG, false);
+		mDebug = true;//sp.getBoolean(KeyboardPreferences.PREF_DEBUG, false);
 		mShowTouchPoints = sp.getBoolean(KeyboardPreferences.PREF_TOUCH_POINTS, false);
 		mShowPreview = sp.getBoolean(KeyboardPreferences.PREF_SHOW_PREVIEW, true);
 		mPortraitMode = Integer.parseInt(sp.getString(KeyboardPreferences.PREF_PORTRAIT_MODE, "0"));
@@ -894,7 +894,7 @@ public class SmartKeyboard extends FakeInputMethodService implements
 				&& !isGmailHack;
 
 
-		voiceInputController.voiceStartInputView();
+		//voiceInputController.voiceStartInputView();
 
 		// In landscape mode, this method gets called without the input view
 		// being created.
@@ -2521,7 +2521,7 @@ public class SmartKeyboard extends FakeInputMethodService implements
 	private void showTrialPopup(KeyboardView mKeyboardView) {
 		try {
 			final Resources res = getResources();
-			AlertDialog.Builder builder = new AlertDialog.Builder(SmartKeyboard.this);
+			AlertDialog.Builder builder = new AlertDialog.Builder(getDialogContext());
 			builder.setTitle("Smart Keyboard");
 			builder.setMessage(res.getString(R.string.trial_popup));
 			builder.setPositiveButton(res.getString(R.string.buy),
@@ -2561,6 +2561,12 @@ public class SmartKeyboard extends FakeInputMethodService implements
 			e.printStackTrace();
 		}
 	}
+	public Context getDialogContext()
+	{
+		if(PicoActivity.mSingleton != null)
+			return PicoActivity.mSingleton;
+		return this;
+	}
 
 	private void displayEnglishDicDialog() {
 		final KeyboardView mKeyboardView = mKeyboardSwitcher.getMainKeyboardView();
@@ -2570,7 +2576,7 @@ public class SmartKeyboard extends FakeInputMethodService implements
 
 		try {
 			final Resources res = getResources();
-			AlertDialog.Builder builder = new AlertDialog.Builder(SmartKeyboard.this);
+			AlertDialog.Builder builder = new AlertDialog.Builder(getDialogContext());
 			builder.setTitle("Smart Keyboard");
 			builder.setMessage(res.getString(R.string.english_dic));
 			builder.setPositiveButton(res.getString(R.string.yes),
@@ -2632,6 +2638,8 @@ public class SmartKeyboard extends FakeInputMethodService implements
 		if (mVibrator == null) {
 			mVibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 		}
+		if (mVibrator == null)
+			return;
 		mVibrator.vibrate(mVibrateDuration);
 	}
 

@@ -69,7 +69,7 @@ import static com.dexilog.smartkeyboard.keyboard.Keyboard.KEYCODE_EMOJI_NUM;
 public class MainKeyboardView extends View implements View.OnClickListener, KeyboardView {
 
 	private static final String TAG = "SmartKeyboard";
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	protected static final int NOT_A_KEY = -1;
 	private static final int[] LONG_PRESSABLE_STATE_SET = { android.R.attr.state_long_pressable };
 	public static final int CODE_LANG = -2;
@@ -841,7 +841,11 @@ public class MainKeyboardView extends View implements View.OnClickListener, Keyb
 			}
 			mAttached = true;
 		}
-		
+		if(getWidth() == 0)
+		{
+			Log.d(TAG, "zero width?");
+			return;
+		}
 		if (mDrawPending || mBuffer == null || mKeyboardChanged) {
 			onBufferDraw();
 		}

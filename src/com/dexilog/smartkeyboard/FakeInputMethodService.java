@@ -20,6 +20,7 @@ import android.provider.*;
 import android.database.*;
 public class FakeInputMethodService extends Service // AbstractInputMethodService
 {
+	public static FakeInputMethodService mSingleton;
 	public void setInputView (View view){}
 	public void requestHideSelf (int flags){}
 	public void sendKeyChar (char charCode){}
@@ -35,7 +36,24 @@ public class FakeInputMethodService extends Service // AbstractInputMethodServic
 	{
 		return null;
 	}
-	public LayoutInflater getLayoutInflater (){ return null;}
+	@Override
+	public void onStart (Intent intent, 
+                int startId)
+	{
+		mSingleton = this;
+
+		try{
+			onInitializeInterface();
+			if(PicoActivity.mSingleton == null)
+				return;
+			PicoActivity.mSingleton.onStartService();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	public LayoutInflater getLayoutInflater (){ return PicoActivity.mSingleton.getLayoutInflater();}
 	public boolean isFullscreenMode ()
 	{
 		return false;
@@ -56,7 +74,7 @@ public void onUpdateSelection (int oldSelStart,
 	public void hideWindow (){}
 	public boolean onEvaluateFullscreenMode (){ return false; }
 	public EditorInfo getCurrentInputEditorInfo () { return null;}
-	public boolean onEvaluateInputViewShown () { return false; }
+	public boolean onEvaluateInputViewShown () { return true; }
 	public void onComputeInsets (InputMethodService.Insets outInsets) {}
 	public void sendDownUpKeyEvents (int keyEventCode) {}
 	public boolean onKeyDown (int keyCode, KeyEvent event) { return false; }

@@ -15,14 +15,53 @@
  */
 
 package com.dexilog.smartkeyboard;
-
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
+import android.inputmethodservice.*;
+import android.view.*;
+import android.view.inputmethod.*;
+import android.app.*;
+import android.content.*;
+import android.os.*;
+import android.util.*;
+import android.graphics.*;
+import android.graphics.drawable.*;
+import android.text.method.*;
+import android.text.*;
+import android.media.*;
+import android.hardware.*;
+import android.content.*;
+import android.widget.*;
+import android.content.pm.*;
+import android.net.Uri;
+import android.provider.*;
+import android.database.*;
 
 public final class PicoActivity extends Activity {
+	public static PicoActivity mSingleton;
+	FrameLayout mRoot;
+	View mContent;
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
+		mSingleton = this;
         super.onCreate(savedInstanceState);
+		mRoot = new FrameLayout(this);
+		setContentView(mRoot);
+		if(FakeInputMethodService.mSingleton == null)
+			startService( new Intent(this, SmartKeyboard.class));
+		else
+			onStartService();
     }
+	public void onStartService()
+	{
+			View v = FakeInputMethodService.mSingleton.onCreateInputView();
+			if(mContent != null)
+				mRoot.removeView(mContent);
+			if(v != null)
+				mRoot.addView(v);
+			mContent = v;
+			EditorInfo attr = new EditorInfo();
+			attr.inputType = EditorInfo.TYPE_CLASS_TEXT;
+			attr.packageName = "com.android.settings";
+			FakeInputMethodService.mSingleton.onStartInput(attr, false);
+			FakeInputMethodService.mSingleton.onStartInputView(attr, false);
+	}
 }
