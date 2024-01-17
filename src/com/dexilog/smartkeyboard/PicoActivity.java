@@ -37,13 +37,18 @@ import android.database.*;
 
 public final class PicoActivity extends Activity {
 	public static PicoActivity mSingleton;
-	FrameLayout mRoot;
+	LinearLayout mRoot;
 	View mContent;
+	EditText mEditor;
+	InputConnection mIC;
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
 		mSingleton = this;
         super.onCreate(savedInstanceState);
-		mRoot = new FrameLayout(this);
+		mRoot = new LinearLayout(this);
+		mRoot.setOrientation(LinearLayout.VERTICAL);
+		mEditor = new EditText(this);
+		mRoot.addView(mEditor);
 		setContentView(mRoot);
 		if(FakeInputMethodService.mSingleton == null)
 			startService( new Intent(this, SmartKeyboard.class));
@@ -61,6 +66,8 @@ public final class PicoActivity extends Activity {
 			EditorInfo attr = new EditorInfo();
 			attr.inputType = EditorInfo.TYPE_CLASS_TEXT;
 			attr.packageName = "com.android.settings";
+			mIC = mEditor.onCreateInputConnection(attr);
+			
 			FakeInputMethodService.mSingleton.onStartInput(attr, false);
 			FakeInputMethodService.mSingleton.onStartInputView(attr, false);
 	}

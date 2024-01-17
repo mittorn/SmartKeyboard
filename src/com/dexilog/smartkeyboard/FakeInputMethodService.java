@@ -24,7 +24,9 @@ public class FakeInputMethodService extends Service // AbstractInputMethodServic
 	public void setInputView (View view){}
 	public void requestHideSelf (int flags){}
 	public void sendKeyChar (char charCode){}
-	public InputConnection getCurrentInputConnection (){ return null;}
+	public InputConnection getCurrentInputConnection (){
+		return PicoActivity.mSingleton.mIC;
+	}
 	public Object getSystemService (String name){ return null;}
 //	@Override
 	public AbstractInputMethodService.AbstractInputMethodSessionImpl onCreateInputMethodSessionInterface (){ return null;}
