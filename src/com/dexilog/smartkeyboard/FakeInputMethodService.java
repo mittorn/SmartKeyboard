@@ -95,9 +95,9 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 	public void onInterrupt(){}
 
 	public AccessibilityNodeInfo mLastEditable;
-	CharSequence mLastText, mOldText;
+	CharSequence mLastText;
 	int mLastStart, mLastEnd;
-	public void setText1(CharSequence text, int start, int end)
+	public void setText1(AccessibilityNodeInfo node, CharSequence text, int start, int end)
 	{
 		//mLastEditable.setText(text);
 		//mLastEditable.setTextSelection(start, end);
@@ -130,7 +130,7 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 		mLastText = text;
 		mLastStart = start;
 		mLastEnd = end;
-		setText1(text, start, end);
+		setText1(mLastEditable, text, start, end);
 	}
 
 	void updateText()
@@ -157,13 +157,21 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 			}
 			if(id == null) id = "";
 			if(mLastEditable != null)
-				id1 = info.getViewIdResourceName ();
+			id = id + mLastEditable.getClassName() + mLastEditable.getPackageName();
+			id1 = info.getViewIdResourceName ();
 			if(id1 == null) id1 = "";
-			mLastEditable = info;
+			id1 = id1 + info.getClassName() + info.getPackageName();
+
 			Log.e("SmartKeyboard", info.toString());
 			if(mLastText != null && id.equals(id1))
 			{
-				setText1(mLastText, mLastStart, mLastEnd);
+				setText1(info, mLastText, mLastStart, mLastEnd);
+				mLastText = null;
+			}
+			int t = e.getEventType();
+			if( t == AccessibilityEvent.TYPE_VIEW_FOCUSED || t == AccessibilityEvent.TYPE_VIEW_CLICKED )
+			{
+				mLastEditable = info;
 				mLastText = null;
 			}
 			
