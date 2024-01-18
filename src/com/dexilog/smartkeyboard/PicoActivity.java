@@ -100,8 +100,10 @@ public final class PicoActivity extends Activity {
 			{
 				FakeInputMethodService.mSingleton.mLastEditable.refresh();
 				if(!FakeInputMethodService.mSingleton.mLastEditable.isShowingHintText ())
-				mEditor.setText(FakeInputMethodService.mSingleton.mLastEditable.getText());
-				mEditor.setSelection(FakeInputMethodService.mSingleton.mLastEditable.getTextSelectionStart(), FakeInputMethodService.mSingleton.mLastEditable.getTextSelectionEnd());
+				{
+					mEditor.setText(FakeInputMethodService.mSingleton.mLastEditable.getText());
+					mEditor.setSelection(FakeInputMethodService.mSingleton.mLastEditable.getTextSelectionStart(), FakeInputMethodService.mSingleton.mLastEditable.getTextSelectionEnd());
+				}
 			}}
 			catch(Exception e)
 			{

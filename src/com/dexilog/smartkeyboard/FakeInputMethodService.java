@@ -163,15 +163,24 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 			id1 = id1 + info.getClassName() + info.getPackageName();
 
 			Log.e("SmartKeyboard", info.toString());
+			boolean reset = true;
 			if(mLastText != null && id.equals(id1))
 			{
 				setText1(info, mLastText, mLastStart, mLastEnd);
 				mLastText = null;
+				reset = false;
 			}
 			int t = e.getEventType();
 			if( t == AccessibilityEvent.TYPE_VIEW_FOCUSED || t == AccessibilityEvent.TYPE_VIEW_CLICKED )
 			{
 				mLastEditable = info;
+				if(reset)
+				{
+					if(!info.isShowingHintText ())
+						setText1(info, info.getText(), info.getTextSelectionStart(), info.getTextSelectionEnd());
+					else
+						setText1(info, "", 0, 0);
+				}
 				mLastText = null;
 			}
 			
