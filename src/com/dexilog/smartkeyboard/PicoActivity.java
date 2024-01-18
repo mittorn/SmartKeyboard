@@ -50,6 +50,9 @@ public final class PicoActivity extends Activity {
 		mRoot.setOrientation(LinearLayout.VERTICAL);
 		mEditor = new EditText(this);
 		mRoot.addView(mEditor);
+		LinearLayout.LayoutParams maxweight = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+		maxweight.weight = 1;
+		mEditor.setLayoutParams(maxweight);
 		setContentView(mRoot);
 		mAttributes = new EditorInfo();
 		if(FakeInputMethodService.mSingleton == null)
