@@ -53,10 +53,31 @@ public final class PicoActivity extends Activity {
 		setContentView(mRoot);
 		mAttributes = new EditorInfo();
 		if(FakeInputMethodService.mSingleton == null)
-			startService( new Intent(this, SmartKeyboard.class));
+			{
+			//startService( new Intent(this, SmartKeyboard.class));
+			}
 		else
+		{
+			FakeInputMethodService.mSingleton.Initialize();
 			onStartService();
+		}
     }
+	@Override
+	protected void onStop() {
+		super.onStop();
+		try{
+		FakeInputMethodService.mSingleton.updateText();
+		}catch(Exception e){}
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		try{
+		FakeInputMethodService.mSingleton.updateText();
+		}catch(Exception e){}
+	}
+	
 	public void onStartService()
 	{
 			View v = FakeInputMethodService.mSingleton.onCreateInputView();
@@ -71,5 +92,17 @@ public final class PicoActivity extends Activity {
 			
 			FakeInputMethodService.mSingleton.onStartInput(mAttributes, false);
 			FakeInputMethodService.mSingleton.onStartInputView(mAttributes, false);
+			try{
+			if(FakeInputMethodService.mSingleton.mLastEditable != null)
+			{
+				FakeInputMethodService.mSingleton.mLastEditable.refresh();
+				if(!FakeInputMethodService.mSingleton.mLastEditable.isShowingHintText ())
+				mEditor.setText(FakeInputMethodService.mSingleton.mLastEditable.getText());
+				mEditor.setSelection(FakeInputMethodService.mSingleton.mLastEditable.getTextSelectionStart(), FakeInputMethodService.mSingleton.mLastEditable.getTextSelectionEnd());
+			}}
+			catch(Exception e)
+			{
+			}
+		
 	}
 }
