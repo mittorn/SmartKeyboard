@@ -23,7 +23,42 @@ public class FakeInputMethodService extends Service // AbstractInputMethodServic
 	public static FakeInputMethodService mSingleton;
 	public void setInputView (View view){}
 	public void requestHideSelf (int flags){}
-	public void sendKeyChar (char charCode){}
+	/*public void sendKeyChar (char charCode){
+		PicoActivity.mSingleton.mIC.sendKeyChar( charCode)
+	}*/
+    public void sendKeyChar(char charCode) {
+        switch (charCode) {
+            case '\n': // Apps may be listening to an enter key to perform an action
+                if (!sendDefaultEditorAction(true)) {
+                    sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER);
+                }
+                break;
+            default:
+                // Make sure that digits go through any text watcher on the client side.
+                if (charCode >= '0' && charCode <= '9') {
+                    sendDownUpKeyEvents(charCode - '0' + KeyEvent.KEYCODE_0);
+                } else {
+                    InputConnection ic = getCurrentInputConnection();
+                    if (ic != null) {
+                        ic.commitText(String.valueOf((char) charCode), 1);
+                    }
+                }
+                break;
+        }
+    }
+    public void sendDownUpKeyEvents(int keyEventCode) {
+        InputConnection ic = getCurrentInputConnection();
+        if (ic == null) return;
+        long eventTime = SystemClock.uptimeMillis();
+        ic.sendKeyEvent(new KeyEvent(eventTime, eventTime,
+                KeyEvent.ACTION_DOWN, keyEventCode, 0, 0, KeyCharacterMap.VIRTUAL_KEYBOARD, 0,
+                KeyEvent.FLAG_SOFT_KEYBOARD|KeyEvent.FLAG_KEEP_TOUCH_MODE));
+        ic.sendKeyEvent(new KeyEvent(SystemClock.uptimeMillis(), eventTime,
+                KeyEvent.ACTION_UP, keyEventCode, 0, 0, KeyCharacterMap.VIRTUAL_KEYBOARD, 0,
+                KeyEvent.FLAG_SOFT_KEYBOARD|KeyEvent.FLAG_KEEP_TOUCH_MODE));
+    }
+    
+
 	public InputConnection getCurrentInputConnection (){
 		return PicoActivity.mSingleton.mIC;
 	}
@@ -75,10 +110,10 @@ public void onUpdateSelection (int oldSelStart,
 	public void hideStatusIcon (){}
 	public void hideWindow (){}
 	public boolean onEvaluateFullscreenMode (){ return false; }
-	public EditorInfo getCurrentInputEditorInfo () { return null;}
+	public EditorInfo getCurrentInputEditorInfo () { return PicoActivity.mSingleton.mAttributes;}
 	public boolean onEvaluateInputViewShown () { return true; }
 	public void onComputeInsets (InputMethodService.Insets outInsets) {}
-	public void sendDownUpKeyEvents (int keyEventCode) {}
+	//public void sendDownUpKeyEvents (int keyEventCode) {}
 	public boolean onKeyDown (int keyCode, KeyEvent event) { return false; }
 	public boolean onKeyUp (int keyCode, KeyEvent event) { return false; }
 	public boolean sendDefaultEditorAction (boolean fromEnterKey) { return false; }
