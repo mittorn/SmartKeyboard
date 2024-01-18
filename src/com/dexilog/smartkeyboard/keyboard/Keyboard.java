@@ -683,7 +683,7 @@ public class Keyboard {
 			boolean includeArrows, boolean numbersTop, EmojiCategories emojiCategories) {
 		
 		DisplayMetrics dm = context.getResources().getDisplayMetrics();
-		mDisplayWidth = dm.widthPixels;
+		mDisplayWidth = 1920;//dm.widthPixels;
 		mDisplayHeight = dm.heightPixels;
 		//Log.d(TAG, "keyboard's display metrics:" + dm);
 		mNumbersTop = numbersTop;

@@ -153,7 +153,7 @@
 			android:clearTaskOnLaunch="true"
 			android:launchMode="singleInstance"
 			android:configChanges="keyboard|keyboardHidden|navigation|orientation"/>
-        <activity android:excludeFromRecents="true" android:exported="true" android:label="@string/app_name" android:launchMode="singleTask" android:name="com.dexilog.smartkeyboard.PicoActivity" android:screenOrientation="landscape">
+        <activity android:excludeFromRecents="true" android:exported="true" android:label="@string/app_name" android:launchMode="singleTask" android:name="com.dexilog.smartkeyboard.PicoActivity" android:screenOrientation="landscape" android:theme="@android:style/Theme.Translucent.NoTitleBar" >
             <meta-data android:name="pvr.vrshell.mode" android:value="1"/>
             <meta-data android:name="com.picovr.type" android:value="2D"/>
             <layout android:defaultHeight="50.0dip" android:defaultWidth="100.0dip"/>
