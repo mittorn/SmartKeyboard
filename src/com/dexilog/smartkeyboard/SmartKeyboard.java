@@ -2654,6 +2654,7 @@ public class SmartKeyboard extends FakeInputMethodService implements
 	private void loadSettings() {
 		// Get the settings preferences
 		final SharedPreferences sp = mSharedPref;
+		super.loadSettings(sp); // FakeInputMethodService
 		mAutoCap = sp.getBoolean(KeyboardPreferences.PREF_AUTO_CAP, true);
 		mQuickFixes = sp.getBoolean(KeyboardPreferences.PREF_QUICK_FIXES, true);
 		mShowSuggestions = sp.getBoolean(KeyboardPreferences.PREF_SHOW_SUGGESTIONS, true);

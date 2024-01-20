@@ -20,6 +20,7 @@ import android.provider.*;
 import android.database.*;
 import android.accessibilityservice.*;
 import android.view.accessibility.*;
+import android.preference.PreferenceManager;
 
 public class FakeInputMethodService extends AccessibilityService // AbstractInputMethodService
 {
@@ -28,6 +29,10 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 	public void requestHideSelf (int flags){}
 	boolean initialized;
 	static final String TAG = "SmartKeyboard";
+	static final int NUM_KEYS = 5;
+	static final int NUM_ACTIONS = 4;
+	ActionCallback[] mActionCallbacks = new ActionCallback[5*4];
+	boolean mAutoActivate = false;
 	public void Initialize()
 	{
 		if(initialized)
@@ -37,6 +42,92 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 		onInitializeInterface();
 		if(PicoActivity.mSingleton == null)
 			return;
+	}
+	class ActionCallback implements Runnable
+	{
+		boolean cb()
+		{
+			return false;
+		}
+		public void run()
+		{
+			cb();
+		}
+	}
+	class ShellAction extends ActionCallback
+	{
+		String command;
+		ShellAction(String s)
+		{
+			command = s;
+		}
+		public boolean cb()
+		{
+			try{
+				java.lang.Process process = Runtime.getRuntime().exec( new String[]{ "/system/bin/sh", "-c", command });
+				process.waitFor();
+			}
+			catch(Exception e){e.printStackTrace();}
+			return true;
+		}
+	}
+	class IntentAction extends ActionCallback
+	{
+		Intent intent;
+		IntentAction(String s) throws Exception
+		{
+			intent = Intent.parseUri(s, Intent.URI_ALLOW_UNSAFE | Intent.URI_INTENT_SCHEME);
+			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);	
+		}
+		public boolean cb()
+		{
+			startActivity(intent);
+			return true;
+		}
+	}
+
+	class KeyboardAction extends ActionCallback
+	{
+		FakeInputMethodService srv;
+		KeyboardAction(FakeInputMethodService s)
+		{
+			srv = s;
+		}
+		public boolean cb()
+		{
+			srv.startEditing();
+			return true;
+		}
+	}
+	
+	protected void loadSettings(SharedPreferences sp)
+	{
+		String[] keys = new String[]{"volup", "voldown", "camera", "sysr", "sysl"};
+		String[] actions = new String[]{"down", "up", "long", "double"};
+		for(int i = 0; i < NUM_KEYS; i++)
+		{
+			for(int j = 0; j < NUM_ACTIONS; j++)
+			{
+				String act = sp.getString("keymap_" + keys[i] + "_" + actions[j], "");
+				ActionCallback r = null;
+				try {
+					final String KW_SH = "shell:";
+					if(act.equals("keyboard"))
+						r = new KeyboardAction(this);
+					else if(act.startsWith("shell:"))
+						r = new ShellAction(act.substring(KW_SH.length()));
+					else if(act.startsWith("intent:") || act.startsWith("wrap-"))
+						r = new IntentAction(act);
+					Log.e(TAG, "LoadKeymap: " + keys[i] +" "+ actions[j] + " " + act + " _ " + (r != null? r.toString() : "NULL"));
+				}
+				catch(Exception e)
+				{
+					e.printStackTrace();
+				}
+				mActionCallbacks[NUM_ACTIONS * i + j] = r;
+			}
+		}
+		mAutoActivate = sp.getBoolean("pico_auto_activate",false);
 	}
     public void sendKeyChar(char charCode) {
 		updateText();
@@ -128,6 +219,7 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 		mLastText = text;
 		mLastStart = start;
 		mLastEnd = end;
+		//setText1(mLastEditable, text, start, end);
 	}
 
 	boolean mFullscreen;
@@ -167,10 +259,34 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 		if(action == 0)
 			updateForeground();
 
-		// start editing on CAMERA (right button on right controller) if selection present
-		if(!mFullscreen && keyCode == 27 && action == 0)
+		if(!mFullscreen)
 		{
-			startEditing();
+			int key_idx = -1;
+			switch(keyCode)
+			{
+				case 24:
+					key_idx = 0;
+					break;
+				case 25:
+					key_idx = 1;
+					break;
+				case 27:
+					key_idx = 2;
+					break;
+				case 902:
+					key_idx = 3;
+					break;
+				case 901:
+					key_idx = 4;
+					break;
+			}
+			if(key_idx < 0)
+				return false;
+			ActionCallback r = mActionCallbacks[NUM_ACTIONS * key_idx + action];
+			Log.e(TAG, "key_idx " + key_idx + " " + String.valueOf(r));
+			if(r != null)
+				return r.cb();
+			return false;
 		}
 		
 		return super.onKeyEvent(event);
@@ -199,11 +315,18 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 		if(!node.isEditable())
 			return;
 		// if we still have penging text (maybe mLastEditable not useful) paste text to any hovered field with same id
-		if(mLastText != null && mLastEditable != null && getIdFromNode(node).equals(getIdFromNode(mLastEditable)))
+		String id = getIdFromNode(node);
+		if(mLastText != null && mLastEditable != null && id.equals(getIdFromNode(mLastEditable)))
 		{
 			setText1(node, mLastText, mLastStart, mLastEnd);
 			mLastText = null;
 		}
+		if(mAutoActivate && mSelectedNode != null && t == AccessibilityEvent.TYPE_VIEW_CLICKED &&  getIdFromNode(mSelectedNode).equals(id))
+		{
+			startEditing();
+			return;
+		}
+			
 		if( t == AccessibilityEvent.TYPE_VIEW_FOCUSED || t == AccessibilityEvent.TYPE_VIEW_CLICKED )
 			mSelectedNode = node;
 	}
@@ -290,6 +413,7 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 	
 		setServiceInfo(mInfo);
 		Initialize();
+		loadSettings(PreferenceManager.getDefaultSharedPreferences(this));
 	
 	}
 

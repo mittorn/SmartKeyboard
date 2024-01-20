@@ -695,6 +695,62 @@
 			android:persistent="false"/>
 	</PreferenceScreen>
 
+	<PreferenceScreen android:title="Pico Keymapper" android:summary="Boku no KeyMapper">
+		<CheckBoxPreference android:title="Activate by click"
+			android:summary="Automaticly tigger keyboard" android:key="pico_auto_activate"
+			android:defaultValue="false" android:persistent="true" />
+		<PreferenceScreen android:title="VOLUME_UP">
+			<EditTextPreference android:title="Down" android:key="keymap_volup_down"
+				android:defaultValue="" android:persistent="true" />
+			<EditTextPreference android:title="Up" android:key="keymap_volup_up"
+				android:defaultValue="" android:persistent="true" />
+			<EditTextPreference android:title="Double" android:key="keymap_volup_double"
+				android:defaultValue="" android:persistent="true" />
+			<EditTextPreference android:title="Long" android:key="keymap_volup_long"
+				android:defaultValue="" android:persistent="true" />
+		</PreferenceScreen>
+		<PreferenceScreen android:title="VOLUME_DOWN">
+			<EditTextPreference android:title="Down" android:key="keymap_voldown_down"
+				android:defaultValue="" android:persistent="true" />
+			<EditTextPreference android:title="Up" android:key="keymap_voldown_up"
+				android:defaultValue="" android:persistent="true" />
+			<EditTextPreference android:title="Double" android:key="keymap_voldown_double"
+				android:defaultValue="" android:persistent="true" />
+			<EditTextPreference android:title="Long" android:key="keymap_voldown_long"
+				android:defaultValue="" android:persistent="true" />
+		</PreferenceScreen>
+		<PreferenceScreen android:title="CAMERA">
+			<EditTextPreference android:title="Down" android:key="keymap_camera_down"
+				android:defaultValue="" android:persistent="true" />
+			<EditTextPreference android:title="Up" android:key="keymap_camera_up"
+				android:defaultValue="" android:persistent="true" />
+			<EditTextPreference android:title="Double" android:key="keymap_camera_double"
+				android:defaultValue="" android:persistent="true" />
+			<EditTextPreference android:title="Long" android:key="keymap_camera_long"
+				android:defaultValue="" android:persistent="true" />
+		</PreferenceScreen>
+		<PreferenceScreen android:title="SYSTEM_RIGHT">
+			<EditTextPreference android:title="Down" android:key="keymap_sysr_down"
+				android:defaultValue="" android:persistent="true" />
+			<EditTextPreference android:title="Up" android:key="keymap_sysr_up"
+				android:defaultValue="" android:persistent="true" />
+			<EditTextPreference android:title="Double" android:key="keymap_sysr_double"
+				android:defaultValue="" android:persistent="true" />
+			<EditTextPreference android:title="Long" android:key="keymap_sysr_long"
+				android:defaultValue="" android:persistent="true" />
+		</PreferenceScreen>
+		<PreferenceScreen android:title="SYSTEM_LEFT">
+			<EditTextPreference android:title="Down" android:key="keymap_sysl_down"
+				android:defaultValue="" android:persistent="true" />
+			<EditTextPreference android:title="Up" android:key="keymap_sysl_up"
+				android:defaultValue="" android:persistent="true" />
+			<EditTextPreference android:title="Double" android:key="keymap_sysl_double"
+				android:defaultValue="" android:persistent="true" />
+			<EditTextPreference android:title="Long" android:key="keymap_sysl_long"
+				android:defaultValue="" android:persistent="true" />
+		</PreferenceScreen>
+	</PreferenceScreen>
+
 	<PreferenceScreen android:title="@string/advanced_settings">
 		<CheckBoxPreference android:title="@string/disable_launcher"
 			android:key="disable_launcher" android:persistent="true"
