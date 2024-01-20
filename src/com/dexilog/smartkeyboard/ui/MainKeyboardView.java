@@ -182,6 +182,8 @@ public class MainKeyboardView extends View implements View.OnClickListener, Keyb
 	private boolean popupKeyboardDisabled = false;
 	private boolean mAbortKey;
 	private Key mInvalidatedKey;
+	private Key mHoveredKey;
+	private int mHoveredKeyIndex;
 	private Rect mClipRegion = new Rect(0, 0, 0, 0);
 	private boolean mPossiblePoly;
 	private SwipeTracker mSwipeTracker = new SwipeTracker();
@@ -866,6 +868,7 @@ public class MainKeyboardView extends View implements View.OnClickListener, Keyb
 			mCanvas.clipRect(0, 0, getWidth(), getHeight(), Op.REPLACE);
 			mBackground.setBounds(0, 0, getWidth(), getHeight());
 			mBackground.draw(mCanvas);
+			mBackground.setAlpha(0);
 		}
 		final Canvas canvas = mCanvas;
 		canvas.clipRect(mDirtyRect, Op.REPLACE);
@@ -938,7 +941,7 @@ public class MainKeyboardView extends View implements View.OnClickListener, Keyb
             mPaint.setColor(key.pressed ? mPressedTextColor : mKeyTextColor);
         }
 		keyBg.setState(drawableState);
-		//keyBackground.setAlpha(mGlobalAlpha);
+		keyBg.setAlpha(mHoveredKey ==  key? 255 : 192);
 
 		// Switch the character to uppercase if shift is pressed
 		final String label = key.label == null? null :
@@ -1671,6 +1674,34 @@ MotionEvent.ACTION_DOWN, me.getX(), me.getY() , me.getMetaState());
 	@Override
 	public boolean onTouchEvent(MotionEvent me) {
 		return onBaseTouchEvent(me, true);
+	}
+
+	@Override
+	public boolean onGenericMotionEvent( MotionEvent event )
+	{
+		//Log.e(TAG, event.toString());
+		int action = event.getAction();
+		if(action == MotionEvent.ACTION_HOVER_MOVE)
+		{
+			int x = (int)event.getX();
+			int y = (int)event.getY();
+			int keyIndex = getKeyIndices(x, y, null);
+			if(keyIndex == NOT_A_KEY)
+				mHoveredKey = null;
+			else
+				mHoveredKey = mKeys[keyIndex];
+			invalidateKey(mHoveredKeyIndex);
+			invalidateKey(keyIndex);
+			mHoveredKeyIndex = keyIndex;
+		}
+		if(action == MotionEvent.ACTION_HOVER_EXIT)
+		{
+			mHoveredKey = null;
+			invalidateKey(mHoveredKeyIndex);
+			mHoveredKeyIndex = NOT_A_KEY;
+		}
+		
+		return false;
 	}
 
 	private boolean onBaseTouchEvent(MotionEvent me, boolean checkJump) {
