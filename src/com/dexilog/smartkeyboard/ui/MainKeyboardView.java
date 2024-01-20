@@ -327,8 +327,8 @@ public class MainKeyboardView extends View implements View.OnClickListener, Keyb
 
 		Resources resources = context.getResources();
 
-		mVerticalCorrection = resources.getDimensionPixelSize(R.dimen.vertical_correction);
-		mSpaceCorrection = resources.getDimensionPixelOffset(R.dimen.spacebar_vertical_correction);
+		mVerticalCorrection = 0; // resources.getDimensionPixelSize(R.dimen.vertical_correction);
+		mSpaceCorrection = 0 ; // resources.getDimensionPixelOffset(R.dimen.spacebar_vertical_correction);
 		mPreviewOffset = 0;
 		mPreviewHeight = resources.getDimensionPixelSize(R.dimen.preview_height);
 		mLabelTextSize = (int)resources.getDimension(R.dimen.label_text_size);

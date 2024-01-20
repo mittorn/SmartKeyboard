@@ -725,7 +725,7 @@ public class SmartKeyboard extends FakeInputMethodService implements
 		mKeyboardView.setSwipeFactor(mSwipeFactor);
 		mKeyboardView.setNoAltPreview(mNoAltPreview);
 		mKeyboardView.disableMT(mDisableMT);
-		mKeyboardView.setCalibration(mCalibration);
+		//mKeyboardView.setCalibration(mCalibration);
 		mKeyboardView.setAccentsPriority(mAccentsPriority);
 		mKeyboardSwitcher.setMicButton(mMicButton);
 		int padding = 0;
