@@ -437,6 +437,18 @@
 			android:title="@string/transparency" android:summary="@string/transparency_summary"
 			android:dialogTitle="@string/opacity" android:key="opacity"
 			android:persistent="true" android:defaultValue="50" />
+		<com.dexilog.smartkeyboard.ui.preferences.SeekBarPref
+			android:title="Background transparency" android:summary="Background transparency"
+			android:dialogTitle="@string/opacity" android:key="opacity_bg"
+			android:persistent="true" android:defaultValue="0" />
+		<com.dexilog.smartkeyboard.ui.preferences.SeekBarPref
+			android:title="Key transparency" android:summary="Key transparency"
+			android:dialogTitle="@string/opacity" android:key="opacity_key"
+			android:persistent="true" android:defaultValue="75" />
+		<com.dexilog.smartkeyboard.ui.preferences.SeekBarPref
+			android:title="Hovered trasparency" android:summary="Key transparency"
+			android:dialogTitle="@string/opacity" android:key="opacity_hkey"
+			android:persistent="true" android:defaultValue="100" />
 		<CheckBoxPreference android:title="@string/cursor_volume"
 			android:key="cursor_volume" android:summary="@string/cursor_volume_summary"
 			android:persistent="true" android:defaultValue="false" />

@@ -175,7 +175,7 @@ public class SmartKeyboard extends FakeInputMethodService implements
 	public int mSwipeRight;
 	public int mSwipeUp;
 	public int mSwipeDown;
-	private int mOpacity;
+	private int mOpacity, mBgOpacity, mKeyOpacity, mHKeyOpacity;
 	private float mVolume = -1.0f;
 	public boolean mDebug = true;
 	private boolean mAlwaysSuggest;
@@ -343,6 +343,9 @@ public class SmartKeyboard extends FakeInputMethodService implements
 		final String skin = sp.getString(KeyboardPreferences.PREF_SKIN, "Black");
 		mSkinLoader.loadSkin(skin);
 		mOpacity = sp.getInt(KeyboardPreferences.PREF_TRANSPARENCY, 50);
+		mBgOpacity = sp.getInt("opacity_bg", 0);
+		mKeyOpacity = sp.getInt("opacity_key", 37);
+		mHKeyOpacity = sp.getInt("opacity_hkey", 50);
 		final int volume = sp.getInt(KeyboardPreferences.PREF_VOLUME, 100);
 		mVolume = (float) Math.exp((volume - 100) / 20);
 		mMicButton = sp.getBoolean(KeyboardPreferences.PREF_MIC_BUTTON, true);
@@ -715,7 +718,7 @@ public class SmartKeyboard extends FakeInputMethodService implements
 			mCandidateViewContainer.applySkin(skin);
 		}
 		mKeyboardView.applySkin(skin);
-		mKeyboardView.setTransparency(mOpacity);
+		mKeyboardView.setTransparency(mOpacity, mBgOpacity, mKeyOpacity, mHKeyOpacity);
 		mKeyboardView.setAlwaysCaps(mAlwaysCaps);
 		mKeyboardView.setShowTouchpoints(mShowTouchPoints);
 		mKeyboardView.setSlidePopup(mSlidePopup);

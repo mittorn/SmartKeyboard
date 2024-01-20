@@ -235,6 +235,7 @@ public class MainKeyboardView extends View implements View.OnClickListener, Keyb
 	
 	private Paint mBgPaint;
 	private boolean mTransparency = false;
+	private int mBgAlpha = 255, mKeyAlpha = 255, mHKeyAlpha = 255;
 
 	/** Whether the keyboard bitmap needs to be redrawn before it's blitted. **/
 	private boolean mDrawPending;
@@ -526,9 +527,12 @@ public class MainKeyboardView extends View implements View.OnClickListener, Keyb
 		mAlwaysCaps = alwaysCaps;
 	}
 	
-	public void setTransparency(int opacity) {
+	public void setTransparency(int opacity, int bgOpacity, int keyOpacity, int hKeyOpacity) {
 		mBgPaint.setARGB(255 * (50 + opacity) / 100, 255, 255, 255);
 		mTransparency = (opacity != 50);
+		mBgAlpha = bgOpacity * 255 / 100;
+		mKeyAlpha = keyOpacity * 255 / 100;
+		mHKeyAlpha = hKeyOpacity * 255 / 100;
 	}
 
 	public void setCompactLayout(boolean compactLayout) {
@@ -868,7 +872,7 @@ public class MainKeyboardView extends View implements View.OnClickListener, Keyb
 			mCanvas.clipRect(0, 0, getWidth(), getHeight(), Op.REPLACE);
 			mBackground.setBounds(0, 0, getWidth(), getHeight());
 			mBackground.draw(mCanvas);
-			mBackground.setAlpha(0);
+			mBackground.setAlpha(mBgAlpha);
 		}
 		final Canvas canvas = mCanvas;
 		canvas.clipRect(mDirtyRect, Op.REPLACE);
@@ -941,7 +945,7 @@ public class MainKeyboardView extends View implements View.OnClickListener, Keyb
             mPaint.setColor(key.pressed ? mPressedTextColor : mKeyTextColor);
         }
 		keyBg.setState(drawableState);
-		keyBg.setAlpha(mHoveredKey ==  key? 255 : 192);
+		keyBg.setAlpha(mHoveredKey ==  key? mHKeyAlpha : mKeyAlpha);
 
 		// Switch the character to uppercase if shift is pressed
 		final String label = key.label == null? null :

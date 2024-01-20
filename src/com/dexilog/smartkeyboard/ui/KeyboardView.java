@@ -49,7 +49,7 @@ public interface KeyboardView {
 
     void applySkin(SkinLoader.SkinInfo skin);
 
-    void setTransparency(int mOpacity);
+    void setTransparency(int mOpacity, int bgOpacity, int keyOpacity, int hKeyOpacity);
 
     void setAlwaysCaps(boolean mAlwaysCaps);
 
