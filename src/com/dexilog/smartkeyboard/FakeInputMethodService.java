@@ -27,6 +27,7 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 	public void setInputView (View view){}
 	public void requestHideSelf (int flags){}
 	boolean initialized;
+	static final String TAG = "SmartKeyboard";
 	public void Initialize()
 	{
 		if(initialized)
@@ -37,9 +38,6 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 		if(PicoActivity.mSingleton == null)
 			return;
 	}
-	/*public void sendKeyChar (char charCode){
-		PicoActivity.mSingleton.mIC.sendKeyChar( charCode)
-	}*/
     public void sendKeyChar(char charCode) {
 		updateText();
         switch (charCode) {
@@ -94,126 +92,202 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 	@Override
 	public void onInterrupt(){}
 
-	public AccessibilityNodeInfo mLastEditable;
+	public AccessibilityNodeInfo mLastEditable, mSelectedNode;
 	CharSequence mLastText;
 	int mLastStart, mLastEnd;
-	public void setText1(AccessibilityNodeInfo node, CharSequence text, int start, int end)
+	// try to apply text to node (true on success)
+	public boolean setText1(AccessibilityNodeInfo node, CharSequence text, int start, int end)
 	{
-		//mLastEditable.setText(text);
-		//mLastEditable.setTextSelection(start, end);
-		try {
-		 Bundle arguments = new Bundle();
-   		arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,text);
-		mLastEditable.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
-		}catch(Exception e){}
+		boolean r = false;
 		try{
-		mLastEditable.performAction(AccessibilityNodeInfo.ACTION_FOCUS);
+			// hack: try switch focus
+			AccessibilityNodeInfo info1 = getRootInActiveWindow();
+			info1.performAction(AccessibilityNodeInfo.ACTION_FOCUS);
+			node.performAction(AccessibilityNodeInfo.ACTION_FOCUS);
 
 		}catch(Exception e){}
+		try {
+			Bundle arguments = new Bundle();
+			arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,text);
+			r = node.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
+		}catch(Exception e){e.printStackTrace();}
 				try{
 		
 			Bundle arguments = new Bundle();
 			arguments.putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT, start);
 			arguments.putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT, end);
-			mLastEditable.performAction(AccessibilityNodeInfo.ACTION_SET_SELECTION, arguments);
+			node.performAction(AccessibilityNodeInfo.ACTION_SET_SELECTION, arguments);
 
 		}catch(Exception e){}
+		return r;
 	}
+
+	// save text from editor
 	public void setText(CharSequence text, int start, int end)
 	{
-		/*try {
-		 Bundle arguments = new Bundle();
-   arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
-       "text");
-		mLastEditable.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
-		}catch(Exception e){}*/
 		mLastText = text;
 		mLastStart = start;
 		mLastEnd = end;
-		setText1(mLastEditable, text, start, end);
 	}
 
+	boolean mFullscreen;
+	static final int TYPES_FULLSCREEN = AccessibilityEvent.TYPE_WINDOWS_CHANGED | AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED | AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED;
+	static final int TYPES_DEFAULT = AccessibilityEvent.TYPE_VIEW_CLICKED |
+				AccessibilityEvent.TYPE_VIEW_FOCUSED | AccessibilityEvent.TYPE_WINDOWS_CHANGED | AccessibilityEvent.TYPE_VIEW_HOVER_EXIT | AccessibilityEvent.TYPE_VIEW_HOVER_ENTER | AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED | AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED | AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED | AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED;
+
+	static final int PICO_FULLSCREEN_WIDTH = 4320, PICO_FULLSCREEN_HEIGHT = 2160;
+	// sed key mapping and event handling rules based on current active window 
+	public void updateForeground()
+	{
+		AccessibilityNodeInfo info = getRootInActiveWindow();
+		if(info != null )
+		{
+			Log.e(TAG, info.toString());
+			Rect bounds = new Rect();
+			info.getBoundsInScreen(bounds);
+			boolean newFullscreen = bounds.top == 0 && bounds.left == 0 && bounds.right == PICO_FULLSCREEN_WIDTH && bounds.bottom == PICO_FULLSCREEN_HEIGHT;
+			if( newFullscreen != mFullscreen )
+			{
+				mFullscreen = newFullscreen;
+				mInfo.eventTypes = newFullscreen ? TYPES_FULLSCREEN : TYPES_DEFAULT;
+				setServiceInfo(mInfo);
+				Log.e(TAG, "fullscreen: " + newFullscreen);
+				// reset text input selection
+				if(newFullscreen)
+					mSelectedNode = null;
+			}
+		}
+	}
+
+	@Override
+	public boolean onKeyEvent(KeyEvent event) {
+		int action = event.getAction();
+		int keyCode = event.getKeyCode();
+		Log.e(TAG, "Key " + action + " " + keyCode);
+		if(action == 0)
+			updateForeground();
+
+		// start editing on CAMERA (right button on right controller) if selection present
+		if(!mFullscreen && keyCode == 27 && action == 0)
+		{
+			startEditing();
+		}
+		
+		return super.onKeyEvent(event);
+
+	}
+
+	// get text from editor
 	void updateText()
 	{
 		setText(PicoActivity.mSingleton.mEditor.getText(), PicoActivity.mSingleton.mEditor.getSelectionStart(),PicoActivity.mSingleton.mEditor.getSelectionEnd() );
 	}
+
+	// generate some reliable (hope) unique id to paste text only to same input field
+	String getIdFromNode(AccessibilityNodeInfo node)
+	{
+		String id = node.getPackageName() + "/" + node.getClassName();
+		String rid = node.getViewIdResourceName();
+		if(rid != null)
+		id += "/" + rid;
+		return id;
+	}
+
+	// update pending editable nodes (if old editble failed), select new nodes
+	void handleEditableNode(AccessibilityNodeInfo node, int t)
+	{
+		if(!node.isEditable())
+			return;
+		// if we still have penging text (maybe mLastEditable not useful) paste text to any hovered field with same id
+		if(mLastText != null && mLastEditable != null && getIdFromNode(node).equals(getIdFromNode(mLastEditable)))
+		{
+			setText1(node, mLastText, mLastStart, mLastEnd);
+			mLastText = null;
+		}
+		if( t == AccessibilityEvent.TYPE_VIEW_FOCUSED || t == AccessibilityEvent.TYPE_VIEW_CLICKED )
+			mSelectedNode = node;
+	}
+
+	// start editor on selected node
+	boolean startEditing()
+	{
+		boolean r;
+		if(mSelectedNode == null)
+			return false;
+		AccessibilityNodeInfo info = mSelectedNode;
+		if(!info.isShowingHintText())
+			r = setText1(info, info.getText(), info.getTextSelectionStart(), info.getTextSelectionEnd());
+		else
+			r = setText1(info, "", 0, 0);
+		if(!r)
+			return false;
+		mLastEditable = info;
+		mSelectedNode = null;
+		Intent i = new Intent(this,PicoActivity.class);
+		i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity(i);
+		return true;
+		
+	}
+
+	// set text on pending editor node
+	void finishEditing()
+	{
+		if((mLastText != null) && setText1(mLastEditable, mLastText, mLastStart, mLastEnd))
+			mLastText = null;
+	}
+
 	@Override
 	public void onAccessibilityEvent(AccessibilityEvent e)
 	{
+		String pkg = e.getPackageName().toString();
+		int t = e.getEventType();
+		// Log.e(TAG, e.toString());
+
+		// do not handle events in editor
+		if(pkg.equals("com.dexilog.smartkeyboard"))
+			return;
+
 		AccessibilityNodeInfo info = e.getSource();
+
+		// as soon editor closed, try update text in old node
 		try{
-		if(mLastText != null)
-			updateText();
+			finishEditing();
 		}catch(Exception ee){}
 		if(info == null) return;
-		if(info.getPackageName().equals("com.dexilog.smartkeyboard"))
-			return;
-		if(info.isEditable())
-		{
-			String id = null, id1 = null;
-			if(mLastEditable != null)
-			{
-				id = mLastEditable.getViewIdResourceName ();
-			}
-			if(id == null) id = "";
-			if(mLastEditable != null)
-			id = id + mLastEditable.getClassName() + mLastEditable.getPackageName();
-			id1 = info.getViewIdResourceName ();
-			if(id1 == null) id1 = "";
-			id1 = id1 + info.getClassName() + info.getPackageName();
-
-			Log.e("SmartKeyboard", info.toString());
-			boolean reset = true;
-			if(mLastText != null && id.equals(id1))
-			{
-				setText1(info, mLastText, mLastStart, mLastEnd);
-				mLastText = null;
-				reset = false;
-			}
-			int t = e.getEventType();
-			if( t == AccessibilityEvent.TYPE_VIEW_FOCUSED || t == AccessibilityEvent.TYPE_VIEW_CLICKED )
-			{
-				mLastEditable = info;
-				if(reset)
-				{
-					if(!info.isShowingHintText ())
-						setText1(info, info.getText(), info.getTextSelectionStart(), info.getTextSelectionEnd());
-					else
-						setText1(info, "", 0, 0);
-				}
-				mLastText = null;
-			}
-			
-		}
+		// Log.e(TAG, info.toString());
+		handleEditableNode(info, t);
 	}
+
+	AccessibilityServiceInfo mInfo;
 	@Override
 	public void onServiceConnected() {
 		mSingleton = this;
-		AccessibilityServiceInfo info = new AccessibilityServiceInfo();
+		mInfo = new AccessibilityServiceInfo();
 		// Set the type of events that this service wants to listen to. Others
 		// aren't passed to this service.
-		info.eventTypes = AccessibilityEvent.TYPE_VIEW_CLICKED |
-				AccessibilityEvent.TYPE_VIEW_FOCUSED | AccessibilityEvent.TYPE_WINDOWS_CHANGED | AccessibilityEvent.TYPE_VIEW_HOVER_EXIT | AccessibilityEvent.TYPE_VIEW_HOVER_ENTER | AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED | AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED ;
+		mInfo.eventTypes = TYPES_DEFAULT;
 	
 	
 		// Set the type of feedback your service provides.
-		info.feedbackType = AccessibilityServiceInfo.FEEDBACK_SPOKEN;
+		mInfo.feedbackType = AccessibilityServiceInfo.FEEDBACK_SPOKEN;
 	
 		// Default services are invoked only if no package-specific services are
 		// present for the type of AccessibilityEvent generated. This service is
 		// app-specific, so the flag isn't necessary. For a general-purpose service,
 		// consider setting the DEFAULT flag.
 	
-		 info.flags = 
+		mInfo.flags = 
 			AccessibilityServiceInfo.DEFAULT | 
 			AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS | 
 			AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS | 
+			AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS |
 //			AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS | // this breaks everything? todo: debug
 0;
 	
-		info.notificationTimeout = 100;
+		mInfo.notificationTimeout = 100;
 	
-		this.setServiceInfo(info);
+		setServiceInfo(mInfo);
 		Initialize();
 	
 	}

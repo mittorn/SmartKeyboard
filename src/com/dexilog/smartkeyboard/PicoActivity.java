@@ -70,6 +70,7 @@ public final class PicoActivity extends Activity {
 		super.onStop();
 		try{
 		FakeInputMethodService.mSingleton.updateText();
+		FakeInputMethodService.mSingleton.finishEditing();
 		}catch(Exception e){}
 	}
 
@@ -78,6 +79,7 @@ public final class PicoActivity extends Activity {
 		super.onDestroy();
 		try{
 		FakeInputMethodService.mSingleton.updateText();
+		FakeInputMethodService.mSingleton.finishEditing();
 		}catch(Exception e){}
 	}
 	
