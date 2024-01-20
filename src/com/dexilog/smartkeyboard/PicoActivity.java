@@ -49,6 +49,9 @@ public final class PicoActivity extends Activity {
 		mRoot = new LinearLayout(this);
 		mRoot.setOrientation(LinearLayout.VERTICAL);
 		mEditor = new EditText(this);
+		mEditor.setBackgroundColor(0xA0353535);
+		//mEditor.getBackground().setAlpha(96);
+		mEditor.setTextColor(0xFFFFFFFF);
 		mRoot.addView(mEditor);
 		LinearLayout.LayoutParams maxweight = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 		maxweight.weight = 1;
