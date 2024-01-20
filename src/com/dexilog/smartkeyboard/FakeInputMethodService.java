@@ -215,6 +215,7 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 		if(mSelectedNode == null)
 			return false;
 		AccessibilityNodeInfo info = mSelectedNode;
+		info.refresh();
 		if(!info.isShowingHintText())
 			r = setText1(info, info.getText(), info.getTextSelectionStart(), info.getTextSelectionEnd());
 		else
