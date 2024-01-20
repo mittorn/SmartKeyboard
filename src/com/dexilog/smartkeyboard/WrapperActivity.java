@@ -34,12 +34,27 @@ import android.content.pm.*;
 import android.net.Uri;
 import android.provider.*;
 import android.database.*;
+import android.hardware.display.DisplayManager;
 
-public final class WrapperActivity extends Activity {
+public class WrapperActivity extends Activity {
 
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		DisplayManager displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
+Display[] displays = displayManager.getDisplays();
+		for(int i = 0; i < displays.length;i++)
+		{
+			Log.e("SmartKeyboard", displays[i].toString());
+		}
+		ActivityOptions options = ActivityOptions.makeBasic();
+		Log.e("SmartKeyboard", displayManager.getDisplay(Display.DEFAULT_DISPLAY).toString());
+		Log.e("SmartKeyboard", getWindow().getWindowManager().getDefaultDisplay().toString());
+		options.setLaunchDisplayId(getWindow().getWindowManager().getDefaultDisplay().getDisplayId());
+		startActivity(new Intent(this, Settings.class), options.toBundle());
+//new Intent(this, PicoActivity.class).setComponent(new android.content.ComponentName("com.android.settings", "com.android.settings.Settings")), options.toBundle());
+		
+
 	
 		
 		/*Intent i = new Intent();

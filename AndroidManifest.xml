@@ -155,20 +155,46 @@
 			android:clearTaskOnLaunch="true"
 			android:launchMode="singleInstance"
 			android:configChanges="keyboard|keyboardHidden|navigation|orientation"/>
-        <activity android:excludeFromRecents="true" android:exported="true" android:label="@string/app_name" android:launchMode="singleTask" android:name="com.dexilog.smartkeyboard.PicoActivity" android:screenOrientation="landscape" android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+        <activity android:resizeableActivity="true" android:excludeFromRecents="true" android:exported="true" android:label="@string/app_name" android:launchMode="singleTask" android:name="com.dexilog.smartkeyboard.PicoActivity" android:screenOrientation="landscape" android:theme="@android:style/Theme.Translucent.NoTitleBar" >
             <meta-data android:name="pvr.vrshell.mode" android:value="1"/>
             <meta-data android:name="com.picovr.type" android:value="2D"/>
             <layout android:defaultHeight="50.0dip" android:defaultWidth="100.0dip"/>
             <meta-data android:name="pico.vr.position" android:value="near_dialog"/>
         </activity>
-        <activity android:excludeFromRecents="true" android:exported="true" android:label="@string/app_name" android:launchMode="singleTask" android:name="com.dexilog.smartkeyboard.WrapperActivity" android:screenOrientation="landscape" android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+        <activity android:excludeFromRecents="true" android:exported="true" android:label="@string/app_name" android:launchMode="singleTask" android:name="com.dexilog.smartkeyboard.WrapperActivityNear" android:screenOrientation="landscape" android:theme="@android:style/Theme.Translucent.NoTitleBar" >
 		<meta-data android:name="pvr.app.type" android:value="2d"/>
-        </activity>
-        <activity android:excludeFromRecents="true" android:exported="true" android:label="@string/app_name" android:launchMode="singleTask" android:name="com.dexilog.smartkeyboard.PicoActivity" android:screenOrientation="landscape" android:theme="@android:style/Theme.Translucent.NoTitleBar" >
             <meta-data android:name="pvr.vrshell.mode" android:value="1"/>
             <meta-data android:name="com.picovr.type" android:value="2D"/>
-            <layout android:defaultHeight="50.0dip" android:defaultWidth="100.0dip"/>
+            <layout android:defaultHeight="300px" android:defaultWidth="300px"/>
+            <meta-data android:name="pico.vr.position" android:value="near"/>
+        </activity>
+        <activity android:excludeFromRecents="true" android:exported="true" android:label="@string/app_name" android:launchMode="singleTask" android:name="com.dexilog.smartkeyboard.WrapperActivityDialog" android:screenOrientation="landscape" android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+            <meta-data android:name="pvr.vrshell.mode" android:value="1"/>
+            <meta-data android:name="com.picovr.type" android:value="2D"/>
+            <layout android:defaultHeight="300px" android:defaultWidth="300px"/>
             <meta-data android:name="pico.vr.position" android:value="near_dialog"/>
+		
+        </activity>
+        <activity android:excludeFromRecents="true" android:exported="true" android:label="@string/app_name" android:launchMode="singleTask" android:name="com.dexilog.smartkeyboard.WrapperActivityFar" android:screenOrientation="landscape" android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+            <meta-data android:name="pvr.vrshell.mode" android:value="1"/>
+            <meta-data android:name="com.picovr.type" android:value="2D"/>
+            <layout android:defaultHeight="300px" android:defaultWidth="300px"/>
+            <meta-data android:name="pico.vr.position" android:value="far"/>
+		
+        </activity>
+        <activity android:excludeFromRecents="true" android:exported="true" android:label="@string/app_name" android:launchMode="singleTask" android:name="com.dexilog.smartkeyboard.WrapperActivityFarDialog" android:screenOrientation="landscape" android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+            <meta-data android:name="pvr.vrshell.mode" android:value="1"/>
+            <meta-data android:name="com.picovr.type" android:value="2D"/>
+            <layout android:defaultHeight="300px" android:defaultWidth="300px"/>
+            <meta-data android:name="pico.vr.position" android:value="far_dialog"/>
+		
+        </activity>
+        <!-- does not steal focus, but still clickable, can be used for implementing input overlay with dummy IC -->
+        <activity android:excludeFromRecents="true" android:exported="true" android:label="@string/app_name" android:launchMode="singleTask" android:name="com.dexilog.smartkeyboard.WrapperActivityVA" android:screenOrientation="landscape" android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+            <meta-data android:name="pvr.vrshell.mode" android:value="1"/>
+            <meta-data android:name="com.picovr.type" android:value="2D"/>
+            <layout android:defaultHeight="300px" android:defaultWidth="300px"/>
+            <meta-data android:name="pico.vr.position" android:value="voice_assistant"/>
 		
         </activity>
 
