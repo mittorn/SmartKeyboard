@@ -51,7 +51,7 @@ Display[] displays = displayManager.getDisplays();
 		Log.e("SmartKeyboard", displayManager.getDisplay(Display.DEFAULT_DISPLAY).toString());
 		Log.e("SmartKeyboard", getWindow().getWindowManager().getDefaultDisplay().toString());
 		options.setLaunchDisplayId(getWindow().getWindowManager().getDefaultDisplay().getDisplayId());
-		startActivity(new Intent(this, Settings.class), options.toBundle());
+		startActivity((Intent)getIntent().getParcelableExtra(Intent.EXTRA_INTENT), options.toBundle());
 //new Intent(this, PicoActivity.class).setComponent(new android.content.ComponentName("com.android.settings", "com.android.settings.Settings")), options.toBundle());
 		
 

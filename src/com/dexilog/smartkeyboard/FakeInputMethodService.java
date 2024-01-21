@@ -40,6 +40,7 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 	static boolean mAutoActivate = false;
 	static long mLongPressDelay, mDoublePressDelay;
 	static boolean mSkipSelf;
+	static final String PKG = "com.dexilog.smartkeyboard";
 	public void Initialize()
 	{
 		if(initialized)
@@ -85,14 +86,34 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 			if(s.startsWith("notify:"))
 			{
 				intent = new Intent();
-				intent.setComponent(new android.content.ComponentName("com.dexilog.smartkeyboard","com.dexilog.smartkeyboard.NotifyActivity"));
+				intent.setComponent(new android.content.ComponentName(PKG,PKG+".NotifyActivity"));
 				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				intent.putExtra("text", s.substring(7));
 			}
+			else if(s.startsWith("wrap-"))
+			{
+				int div = s.indexOf(":");
+				Intent i = Intent.parseUri("intent"+s.substring(div), Intent.URI_ALLOW_UNSAFE | Intent.URI_INTENT_SCHEME);
+				String wrap = PKG + ".WrapperActivity";
+				if( s.startsWith("wrap-dialog:"))
+					wrap += "Dialog";
+				else if( s.startsWith("wrap-near:"))
+					wrap += "Near";
+				else if( s.startsWith("wrap-far:"))
+					wrap += "Far";
+				else if( s.startsWith("wrap-fardialog:"))
+					wrap += "FarDialog";
+				else if( s.startsWith("wrap-va:"))
+					wrap += "VA";
+				intent = new Intent();
+				intent.setComponent(new android.content.ComponentName(PKG, wrap));
+				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				intent.putExtra(Intent.EXTRA_INTENT, i);
+			}
 			else
 			{
-			intent = Intent.parseUri(s, Intent.URI_ALLOW_UNSAFE | Intent.URI_INTENT_SCHEME);
-			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);	
+				intent = Intent.parseUri(s, Intent.URI_ALLOW_UNSAFE | Intent.URI_INTENT_SCHEME);
+				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);	
 			}
 		}
 		void cb()
@@ -456,7 +477,7 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 		// Log.e(TAG, e.toString());
 
 		// do not handle events in editor
-		if(mSkipSelf && pkg.equals("com.dexilog.smartkeyboard"))
+		if(mSkipSelf && pkg.equals(PKG))
 			return;
 
 		AccessibilityNodeInfo info = e.getSource();
