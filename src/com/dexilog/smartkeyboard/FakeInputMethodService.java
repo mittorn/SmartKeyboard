@@ -37,6 +37,7 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 	static final int ACTION_DOUBLE = 3;
 	static final int NUM_ACTIONS = 4;
 	static ActionCallback[] mActionCallbacks = new ActionCallback[NUM_KEYS*NUM_ACTIONS];
+	static int mKeyAllowFullscreen = 0;
 	static boolean mAutoActivate = false;
 	static long mLongPressDelay, mDoublePressDelay;
 	static boolean mSkipSelf;
@@ -139,8 +140,11 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 	{
 		String[] keys = new String[]{"volup", "voldown", "camera", "sysr", "sysl"};
 		String[] actions = new String[]{"down", "up", "long", "double"};
+		mKeyAllowFullscreen = 0;
 		for(int i = 0; i < NUM_KEYS; i++)
 		{
+			if(sp.getBoolean("keymap_" + keys[i] + "_fullscreen",false))
+				mKeyAllowFullscreen |= 1 << i;
 			for(int j = 0; j < NUM_ACTIONS; j++)
 			{
 				String act = sp.getString("keymap_" + keys[i] + "_" + actions[j], "");
@@ -303,11 +307,10 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 	public boolean onKeyEvent(KeyEvent event) {
 		int action = event.getAction();
 		int keyCode = event.getKeyCode();
-		Log.e(TAG, "Key " + action + " " + keyCode);
+		Log.e(TAG, "Key " + action + " " + keyCode + " " + mKeyAllowFullscreen);
 		if(action == 0)
 			updateForeground();
 
-		if(!mFullscreen)
 		{
 			int key_idx = -1;
 			boolean ret = false;
@@ -330,6 +333,8 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 					break;
 			}
 			if(key_idx < 0)
+				return false;
+			if(mFullscreen && ((1 << key_idx) & mKeyAllowFullscreen ) == 0 )
 				return false;
 			ActionCallback l = mActionCallbacks[NUM_ACTIONS * key_idx + ACTION_LONG];
 			if(l != null)
@@ -395,7 +400,7 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 		}
 		//else Log.e(TAG, "skipping fullscreen event!");
 		
-		return super.onKeyEvent(event);
+		//return super.onKeyEvent(event);
 
 	}
 

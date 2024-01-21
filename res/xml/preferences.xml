@@ -712,6 +712,9 @@
 				android:defaultValue="" android:persistent="true" />
 			<EditTextPreference android:title="Long" android:key="keymap_volup_long"
 				android:defaultValue="" android:persistent="true" />
+			<CheckBoxPreference android:title="Allow in fullscreen"
+				android:key="keymap_volup_fullscreen"
+				android:defaultValue="false" android:persistent="true" />
 		</PreferenceScreen>
 		<PreferenceScreen android:title="VOLUME_DOWN">
 			<EditTextPreference android:title="Down" android:key="keymap_voldown_down"
@@ -722,6 +725,9 @@
 				android:defaultValue="" android:persistent="true" />
 			<EditTextPreference android:title="Long" android:key="keymap_voldown_long"
 				android:defaultValue="" android:persistent="true" />
+			<CheckBoxPreference android:title="Allow in fullscreen"
+				android:key="keymap_voldown_fullscreen"
+				android:defaultValue="false" android:persistent="true" />
 		</PreferenceScreen>
 		<PreferenceScreen android:title="CAMERA">
 			<EditTextPreference android:title="Down" android:key="keymap_camera_down"
@@ -732,6 +738,9 @@
 				android:defaultValue="" android:persistent="true" />
 			<EditTextPreference android:title="Long" android:key="keymap_camera_long"
 				android:defaultValue="" android:persistent="true" />
+			<CheckBoxPreference android:title="Allow in fullscreen"
+				android:key="keymap_camera_fullscreen"
+				android:defaultValue="false" android:persistent="true" />
 		</PreferenceScreen>
 		<PreferenceScreen android:title="SYSTEM_RIGHT">
 			<EditTextPreference android:title="Down" android:key="keymap_sysr_down"
@@ -742,6 +751,9 @@
 				android:defaultValue="" android:persistent="true" />
 			<EditTextPreference android:title="Long" android:key="keymap_sysr_long"
 				android:defaultValue="" android:persistent="true" />
+			<CheckBoxPreference android:title="Allow in fullscreen"
+				android:key="keymap_sysr_fullscreen"
+				android:defaultValue="false" android:persistent="true" />
 		</PreferenceScreen>
 		<PreferenceScreen android:title="SYSTEM_LEFT">
 			<EditTextPreference android:title="Down" android:key="keymap_sysl_down"
@@ -752,6 +764,9 @@
 				android:defaultValue="" android:persistent="true" />
 			<EditTextPreference android:title="Long" android:key="keymap_sysl_long"
 				android:defaultValue="" android:persistent="true" />
+			<CheckBoxPreference android:title="Allow in fullscreen"
+				android:key="keymap_sysl_fullscreen"
+				android:defaultValue="false" android:persistent="true" />
 		</PreferenceScreen>
 	</PreferenceScreen>
 
