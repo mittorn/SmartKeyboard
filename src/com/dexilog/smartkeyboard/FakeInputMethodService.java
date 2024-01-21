@@ -28,11 +28,18 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 	public void setInputView (View view){}
 	public void requestHideSelf (int flags){}
 	boolean initialized;
+	Handler mHandler;
 	static final String TAG = "SmartKeyboard";
 	static final int NUM_KEYS = 5;
+	static final int ACTION_DOWN = 0;
+	static final int ACTION_UP = 1;
+	static final int ACTION_LONG = 2;
+	static final int ACTION_DOUBLE = 3;
 	static final int NUM_ACTIONS = 4;
-	ActionCallback[] mActionCallbacks = new ActionCallback[5*4];
-	boolean mAutoActivate = false;
+	static ActionCallback[] mActionCallbacks = new ActionCallback[NUM_KEYS*NUM_ACTIONS];
+	static boolean mAutoActivate = false;
+	static long mLongPressDelay, mDoublePressDelay;
+	static boolean mSkipSelf;
 	public void Initialize()
 	{
 		if(initialized)
@@ -45,12 +52,12 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 	}
 	class ActionCallback implements Runnable
 	{
-		boolean cb()
-		{
-			return false;
-		}
+		public boolean return_value;
+		public boolean pending; // set to false after long click acted
+		void cb(){}
 		public void run()
 		{
+			pending = false;
 			cb();
 		}
 	}
@@ -61,14 +68,13 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 		{
 			command = s;
 		}
-		public boolean cb()
+		void cb()
 		{
 			try{
 				java.lang.Process process = Runtime.getRuntime().exec( new String[]{ "/system/bin/sh", "-c", command });
 				process.waitFor();
 			}
 			catch(Exception e){e.printStackTrace();}
-			return true;
 		}
 	}
 	class IntentAction extends ActionCallback
@@ -79,10 +85,9 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 			intent = Intent.parseUri(s, Intent.URI_ALLOW_UNSAFE | Intent.URI_INTENT_SCHEME);
 			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);	
 		}
-		public boolean cb()
+		void cb()
 		{
 			startActivity(intent);
-			return true;
 		}
 	}
 
@@ -93,10 +98,9 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 		{
 			srv = s;
 		}
-		public boolean cb()
+		void cb()
 		{
 			srv.startEditing();
-			return true;
 		}
 	}
 	
@@ -110,14 +114,25 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 			{
 				String act = sp.getString("keymap_" + keys[i] + "_" + actions[j], "");
 				ActionCallback r = null;
+				boolean ret = true;
+				// + disables key override
+				if(act.startsWith("+"))
+				{
+					ret = false;
+					act = act.substring(1);
+				}
 				try {
 					final String KW_SH = "shell:";
 					if(act.equals("keyboard"))
 						r = new KeyboardAction(this);
+					if(act.equals("empty"))
+						r = new ActionCallback();
 					else if(act.startsWith("shell:"))
 						r = new ShellAction(act.substring(KW_SH.length()));
 					else if(act.startsWith("intent:") || act.startsWith("wrap-"))
 						r = new IntentAction(act);
+					if( r != null )
+						r.return_value = ret;
 					Log.e(TAG, "LoadKeymap: " + keys[i] +" "+ actions[j] + " " + act + " _ " + (r != null? r.toString() : "NULL"));
 				}
 				catch(Exception e)
@@ -128,6 +143,8 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 			}
 		}
 		mAutoActivate = sp.getBoolean("pico_auto_activate",false);
+		mLongPressDelay = sp.getInt("keymapper_long_press_delay", 400);
+		mDoublePressDelay = sp.getInt("keymapper_double_press_delay", 300);
 	}
     public void sendKeyChar(char charCode) {
 		updateText();
@@ -250,7 +267,7 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 			}
 		}
 	}
-
+	long mLastEventTime;
 	@Override
 	public boolean onKeyEvent(KeyEvent event) {
 		int action = event.getAction();
@@ -262,6 +279,7 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 		if(!mFullscreen)
 		{
 			int key_idx = -1;
+			boolean ret = false;
 			switch(keyCode)
 			{
 				case 24:
@@ -282,12 +300,69 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 			}
 			if(key_idx < 0)
 				return false;
+			ActionCallback l = mActionCallbacks[NUM_ACTIONS * key_idx + ACTION_LONG];
+			if(l != null)
+			{
+				try{
+					// long callback sets return, but maybe overriden by up/down
+					ret = l.return_value;
+					if(action == ACTION_DOWN) // setup long/double handlers
+						mHandler.postDelayed(l, mLongPressDelay);
+					else
+					{
+						mHandler.removeCallbacks(l);
+						// if callback is called, skip double/up processing
+						if(!l.pending)
+							return ret;
+						l.pending = false;
+					}
+				}catch(Exception e){}
+			}
+			ActionCallback d = mActionCallbacks[NUM_ACTIONS * key_idx + ACTION_DOUBLE];
 			ActionCallback r = mActionCallbacks[NUM_ACTIONS * key_idx + action];
+			if( d != null )
+			{
+				long tm = event.getEventTime();
+				if(tm - mLastEventTime < mDoublePressDelay)
+				{
+					if(action == ACTION_DOWN)
+						d.run();
+					// always run down/up callback if it is not intercepting
+					// note: intercepting down event may be broken when double enabled, but is it even needed?
+					if(r != null && !r.return_value)
+						r.run();
+					// cancel intercepting up event
+					if(mActionCallbacks[NUM_ACTIONS * key_idx + ACTION_UP] != null)
+					{
+						try{
+							mHandler.removeCallbacks(mActionCallbacks[NUM_ACTIONS * key_idx + ACTION_UP]);
+						}catch(Exception e){}
+					}
+					return d.return_value;
+				}
+				else if(action == ACTION_UP)
+				{
+					// if UP action is intercepting, post it delayed, so it may be canceled
+					if(r != null && r.return_value)
+					{
+						mHandler.postDelayed(r,mDoublePressDelay);
+						return true;
+					}
+				}
+				if(action == ACTION_DOWN)
+					mLastEventTime = tm;
+			}
+			
+
 			Log.e(TAG, "key_idx " + key_idx + " " + String.valueOf(r));
 			if(r != null)
-				return r.cb();
-			return false;
+			{
+				r.run();
+				ret = r.return_value;
+			}
+			return ret;
 		}
+		//else Log.e(TAG, "skipping fullscreen event!");
 		
 		return super.onKeyEvent(event);
 
@@ -347,6 +422,7 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 			return false;
 		mLastEditable = info;
 		mSelectedNode = null;
+		mSkipSelf = true;
 		Intent i = new Intent(this,PicoActivity.class);
 		i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(i);
@@ -357,6 +433,7 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 	// set text on pending editor node
 	void finishEditing()
 	{
+		mSkipSelf = false;
 		if((mLastText != null) && setText1(mLastEditable, mLastText, mLastStart, mLastEnd))
 			mLastText = null;
 	}
@@ -369,7 +446,7 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 		// Log.e(TAG, e.toString());
 
 		// do not handle events in editor
-		if(pkg.equals("com.dexilog.smartkeyboard"))
+		if(mSkipSelf && pkg.equals("com.dexilog.smartkeyboard"))
 			return;
 
 		AccessibilityNodeInfo info = e.getSource();
@@ -387,6 +464,7 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 	@Override
 	public void onServiceConnected() {
 		mSingleton = this;
+		mHandler = new Handler(Looper.getMainLooper());
 		mInfo = new AccessibilityServiceInfo();
 		// Set the type of events that this service wants to listen to. Others
 		// aren't passed to this service.

@@ -699,6 +699,10 @@
 		<CheckBoxPreference android:title="Activate by click"
 			android:summary="Automaticly tigger keyboard" android:key="pico_auto_activate"
 			android:defaultValue="false" android:persistent="true" />
+		<EditTextPreference android:title="Long press delay" android:key="keymapper_long_press_delay"
+			android:defaultValue="400" android:persistent="true" />
+		<EditTextPreference android:title="Double press delay" android:key="keymapper_double_press_delay"
+			android:defaultValue="300" android:persistent="true" />
 		<PreferenceScreen android:title="VOLUME_UP">
 			<EditTextPreference android:title="Down" android:key="keymap_volup_down"
 				android:defaultValue="" android:persistent="true" />
