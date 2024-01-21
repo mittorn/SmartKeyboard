@@ -82,8 +82,18 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 		Intent intent;
 		IntentAction(String s) throws Exception
 		{
+			if(s.startsWith("notify:"))
+			{
+				intent = new Intent();
+				intent.setComponent(new android.content.ComponentName("com.dexilog.smartkeyboard","com.dexilog.smartkeyboard.NotifyActivity"));
+				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				intent.putExtra("text", s.substring(7));
+			}
+			else
+			{
 			intent = Intent.parseUri(s, Intent.URI_ALLOW_UNSAFE | Intent.URI_INTENT_SCHEME);
 			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);	
+			}
 		}
 		void cb()
 		{
@@ -125,11 +135,11 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 					final String KW_SH = "shell:";
 					if(act.equals("keyboard"))
 						r = new KeyboardAction(this);
-					if(act.equals("empty"))
+					else if(act.equals("empty"))
 						r = new ActionCallback();
 					else if(act.startsWith("shell:"))
 						r = new ShellAction(act.substring(KW_SH.length()));
-					else if(act.startsWith("intent:") || act.startsWith("wrap-"))
+					else if(act.length() > 0)
 						r = new IntentAction(act);
 					if( r != null )
 						r.return_value = ret;
@@ -143,8 +153,8 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 			}
 		}
 		mAutoActivate = sp.getBoolean("pico_auto_activate",false);
-		mLongPressDelay = sp.getInt("keymapper_long_press_delay", 400);
-		mDoublePressDelay = sp.getInt("keymapper_double_press_delay", 300);
+		mLongPressDelay = Integer.valueOf(sp.getString("keymapper_long_press_delay", "400"));
+		mDoublePressDelay = Integer.valueOf(sp.getString("keymapper_double_press_delay", "300"));
 	}
     public void sendKeyChar(char charCode) {
 		updateText();
