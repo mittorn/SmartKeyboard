@@ -149,6 +149,13 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 		String[] keys = new String[]{"volup", "voldown", "camera", "sysr", "sysl"};
 		String[] actions = new String[]{"down", "up", "long", "double"};
 		String[] osc_actions = new String[]{"down", "up"};
+		String[] sOscAddr = sp.getString("osc_address", "127.0.0.1:9000").split(":");
+		InetAddress oscAddr = null;
+		int oscPort = 9000;
+		try {
+			oscAddr = InetAddress.getByName(sOscAddr[0]);
+			oscPort = Integer.valueOf(sOscAddr[1]);
+		}catch(Exception e){}
 		mKeyAllowFullscreen = 0;
 		for(int i = 0; i < NUM_KEYS; i++)
 		{
@@ -188,8 +195,22 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 			for(int j = 0; j < NUM_OSC; j++)
 			{
 				String act = sp.getString("osc_"+ keys[i] + "_" + osc_actions[j], "");
+				int addrlen = act.indexOf('/');
+				InetAddress lOscAddr = oscAddr;
+				int lOscPort = oscPort;
+				if(addrlen > 0)
+				{
+					try {
+						sOscAddr = act.substring(0,addrlen).split(":");
+						lOscAddr = InetAddress.getByName(sOscAddr[0]);
+						lOscPort = Integer.valueOf(sOscAddr[1]);
+					}catch(Exception e){}
+					act = act.substring(addrlen);
+					Log.e(TAG, act);
+				}
 				String[] tokens = act.split(" ");
-				if(tokens.length < 1)
+
+				if(tokens.length < 2)
 					continue;
 				try{
 					String head = tokens[0];
@@ -289,7 +310,7 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 					}
 					byte[] arr= buf.array();
 					Log.e(TAG, "registered OSC " + keys[i] + " " + arr.length );
-					mOSCPackets[NUM_OSC * i + j] = new DatagramPacket(arr, arr.length, InetAddress.getByName("127.0.0.1"), 9000);
+					mOSCPackets[NUM_OSC * i + j] = new DatagramPacket(arr, arr.length, lOscAddr, lOscPort);
 				}catch(Exception e){e.printStackTrace();}
 				//
 			}
