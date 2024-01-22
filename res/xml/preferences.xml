@@ -703,70 +703,98 @@
 			android:defaultValue="400" android:persistent="true" />
 		<EditTextPreference android:title="Double press delay" android:key="keymapper_double_press_delay"
 			android:defaultValue="300" android:persistent="true" />
-		<PreferenceScreen android:title="VOLUME_UP">
-			<EditTextPreference android:title="Down" android:key="keymap_volup_down"
-				android:defaultValue="" android:persistent="true" />
-			<EditTextPreference android:title="Up" android:key="keymap_volup_up"
-				android:defaultValue="" android:persistent="true" />
-			<EditTextPreference android:title="Double" android:key="keymap_volup_double"
-				android:defaultValue="" android:persistent="true" />
-			<EditTextPreference android:title="Long" android:key="keymap_volup_long"
-				android:defaultValue="" android:persistent="true" />
-			<CheckBoxPreference android:title="Allow in fullscreen"
-				android:key="keymap_volup_fullscreen"
-				android:defaultValue="false" android:persistent="true" />
+		<PreferenceScreen android:title="Key bindings" android:summary="Main key bindings">
+			<PreferenceScreen android:title="VOLUME_UP">
+				<EditTextPreference android:title="Down" android:key="keymap_volup_down"
+					android:defaultValue="" android:persistent="true" />
+				<EditTextPreference android:title="Up" android:key="keymap_volup_up"
+					android:defaultValue="" android:persistent="true" />
+				<EditTextPreference android:title="Double" android:key="keymap_volup_double"
+					android:defaultValue="" android:persistent="true" />
+				<EditTextPreference android:title="Long" android:key="keymap_volup_long"
+					android:defaultValue="" android:persistent="true" />
+				<CheckBoxPreference android:title="Allow in fullscreen"
+					android:key="keymap_volup_fullscreen"
+					android:defaultValue="false" android:persistent="true" />
+			</PreferenceScreen>
+			<PreferenceScreen android:title="VOLUME_DOWN">
+				<EditTextPreference android:title="Down" android:key="keymap_voldown_down"
+					android:defaultValue="" android:persistent="true" />
+				<EditTextPreference android:title="Up" android:key="keymap_voldown_up"
+					android:defaultValue="" android:persistent="true" />
+				<EditTextPreference android:title="Double" android:key="keymap_voldown_double"
+					android:defaultValue="" android:persistent="true" />
+				<EditTextPreference android:title="Long" android:key="keymap_voldown_long"
+					android:defaultValue="" android:persistent="true" />
+				<CheckBoxPreference android:title="Allow in fullscreen"
+					android:key="keymap_voldown_fullscreen"
+					android:defaultValue="false" android:persistent="true" />
+			</PreferenceScreen>
+			<PreferenceScreen android:title="CAMERA">
+				<EditTextPreference android:title="Down" android:key="keymap_camera_down"
+					android:defaultValue="" android:persistent="true" />
+				<EditTextPreference android:title="Up" android:key="keymap_camera_up"
+					android:defaultValue="" android:persistent="true" />
+				<EditTextPreference android:title="Double" android:key="keymap_camera_double"
+					android:defaultValue="" android:persistent="true" />
+				<EditTextPreference android:title="Long" android:key="keymap_camera_long"
+					android:defaultValue="" android:persistent="true" />
+				<CheckBoxPreference android:title="Allow in fullscreen"
+					android:key="keymap_camera_fullscreen"
+					android:defaultValue="false" android:persistent="true" />
+			</PreferenceScreen>
+			<PreferenceScreen android:title="SYSTEM_RIGHT">
+				<EditTextPreference android:title="Down" android:key="keymap_sysr_down"
+					android:defaultValue="" android:persistent="true" />
+				<EditTextPreference android:title="Up" android:key="keymap_sysr_up"
+					android:defaultValue="" android:persistent="true" />
+				<EditTextPreference android:title="Double" android:key="keymap_sysr_double"
+					android:defaultValue="" android:persistent="true" />
+				<EditTextPreference android:title="Long" android:key="keymap_sysr_long"
+					android:defaultValue="" android:persistent="true" />
+				<CheckBoxPreference android:title="Allow in fullscreen"
+					android:key="keymap_sysr_fullscreen"
+					android:defaultValue="false" android:persistent="true" />
+			</PreferenceScreen>
+			<PreferenceScreen android:title="SYSTEM_LEFT">
+				<EditTextPreference android:title="Down" android:key="keymap_sysl_down"
+					android:defaultValue="" android:persistent="true" />
+				<EditTextPreference android:title="Up" android:key="keymap_sysl_up"
+					android:defaultValue="" android:persistent="true" />
+				<EditTextPreference android:title="Double" android:key="keymap_sysl_double"
+					android:defaultValue="" android:persistent="true" />
+				<EditTextPreference android:title="Long" android:key="keymap_sysl_long"
+					android:defaultValue="" android:persistent="true" />
+				<CheckBoxPreference android:title="Allow in fullscreen"
+					android:key="keymap_sysl_fullscreen"
+					android:defaultValue="false" android:persistent="true" />
+			</PreferenceScreen>
 		</PreferenceScreen>
-		<PreferenceScreen android:title="VOLUME_DOWN">
-			<EditTextPreference android:title="Down" android:key="keymap_voldown_down"
-				android:defaultValue="" android:persistent="true" />
-			<EditTextPreference android:title="Up" android:key="keymap_voldown_up"
-				android:defaultValue="" android:persistent="true" />
-			<EditTextPreference android:title="Double" android:key="keymap_voldown_double"
-				android:defaultValue="" android:persistent="true" />
-			<EditTextPreference android:title="Long" android:key="keymap_voldown_long"
-				android:defaultValue="" android:persistent="true" />
-			<CheckBoxPreference android:title="Allow in fullscreen"
-				android:key="keymap_voldown_fullscreen"
-				android:defaultValue="false" android:persistent="true" />
-		</PreferenceScreen>
-		<PreferenceScreen android:title="CAMERA">
-			<EditTextPreference android:title="Down" android:key="keymap_camera_down"
-				android:defaultValue="" android:persistent="true" />
-			<EditTextPreference android:title="Up" android:key="keymap_camera_up"
-				android:defaultValue="" android:persistent="true" />
-			<EditTextPreference android:title="Double" android:key="keymap_camera_double"
-				android:defaultValue="" android:persistent="true" />
-			<EditTextPreference android:title="Long" android:key="keymap_camera_long"
-				android:defaultValue="" android:persistent="true" />
-			<CheckBoxPreference android:title="Allow in fullscreen"
-				android:key="keymap_camera_fullscreen"
-				android:defaultValue="false" android:persistent="true" />
-		</PreferenceScreen>
-		<PreferenceScreen android:title="SYSTEM_RIGHT">
-			<EditTextPreference android:title="Down" android:key="keymap_sysr_down"
-				android:defaultValue="" android:persistent="true" />
-			<EditTextPreference android:title="Up" android:key="keymap_sysr_up"
-				android:defaultValue="" android:persistent="true" />
-			<EditTextPreference android:title="Double" android:key="keymap_sysr_double"
-				android:defaultValue="" android:persistent="true" />
-			<EditTextPreference android:title="Long" android:key="keymap_sysr_long"
-				android:defaultValue="" android:persistent="true" />
-			<CheckBoxPreference android:title="Allow in fullscreen"
-				android:key="keymap_sysr_fullscreen"
-				android:defaultValue="false" android:persistent="true" />
-		</PreferenceScreen>
-		<PreferenceScreen android:title="SYSTEM_LEFT">
-			<EditTextPreference android:title="Down" android:key="keymap_sysl_down"
-				android:defaultValue="" android:persistent="true" />
-			<EditTextPreference android:title="Up" android:key="keymap_sysl_up"
-				android:defaultValue="" android:persistent="true" />
-			<EditTextPreference android:title="Double" android:key="keymap_sysl_double"
-				android:defaultValue="" android:persistent="true" />
-			<EditTextPreference android:title="Long" android:key="keymap_sysl_long"
-				android:defaultValue="" android:persistent="true" />
-			<CheckBoxPreference android:title="Allow in fullscreen"
-				android:key="keymap_sysl_fullscreen"
-				android:defaultValue="false" android:persistent="true" />
+		<PreferenceScreen android:title="OSC Override" android:summary="Map key events to OSC">
+			<EditTextPreference android:title="OSC address" android:key="osc_address"
+					android:defaultValue="127.0.0.1:9000" android:persistent="true" />
+			<EditTextPreference android:title="OSC packages" android:key="osc_packages" android:summary="Splitted by comma"
+					android:defaultValue="com.vrchat.android" android:persistent="true" />
+			<EditTextPreference android:title="VOLUME_UP up" android:key="osc_volup_up"
+					android:defaultValue="" android:persistent="true" />
+			<EditTextPreference android:title="VOLUME_UP down" android:key="osc_volup_down"
+					android:defaultValue="" android:persistent="true" />
+			<EditTextPreference android:title="VOLUME_DOWN up" android:key="osc_voldown_up"
+					android:defaultValue="" android:persistent="true" />
+			<EditTextPreference android:title="VOLUME_DOWN down" android:key="osc_voldown_down"
+					android:defaultValue="" android:persistent="true" />
+			<EditTextPreference android:title="CAMERA up" android:key="osc_camera_up"
+					android:defaultValue="" android:persistent="true" />
+			<EditTextPreference android:title="CAMERA down" android:key="osc_camera_down"
+					android:defaultValue="" android:persistent="true" />
+			<EditTextPreference android:title="SYSTEM_RIGHT up" android:key="osc_sysl_up"
+					android:defaultValue="" android:persistent="true" />
+			<EditTextPreference android:title="SYSTEM_RIGHT down" android:key="osc_sysr_down"
+					android:defaultValue="" android:persistent="true" />
+			<EditTextPreference android:title="SYSTEM_LEFT up" android:key="osc_sysl_up"
+					android:defaultValue="" android:persistent="true" />
+			<EditTextPreference android:title="SYSTEM_LEFT down" android:key="osc_sysr_down"
+					android:defaultValue="" android:persistent="true" />
 		</PreferenceScreen>
 	</PreferenceScreen>
 

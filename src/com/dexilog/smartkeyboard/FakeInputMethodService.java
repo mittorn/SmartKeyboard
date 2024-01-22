@@ -21,14 +21,17 @@ import android.database.*;
 import android.accessibilityservice.*;
 import android.view.accessibility.*;
 import android.preference.PreferenceManager;
+import java.nio.ByteBuffer;
+import java.net.*;
+import java.util.*;
 
 public class FakeInputMethodService extends AccessibilityService // AbstractInputMethodService
 {
 	public static FakeInputMethodService mSingleton;
 	public void setInputView (View view){}
 	public void requestHideSelf (int flags){}
-	boolean initialized;
-	Handler mHandler;
+	static boolean initialized;
+	static Handler mHandler;
 	static final String TAG = "SmartKeyboard";
 	static final int NUM_KEYS = 5;
 	static final int ACTION_DOWN = 0;
@@ -36,12 +39,17 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 	static final int ACTION_LONG = 2;
 	static final int ACTION_DOUBLE = 3;
 	static final int NUM_ACTIONS = 4;
+	static final int NUM_OSC = 2;
 	static ActionCallback[] mActionCallbacks = new ActionCallback[NUM_KEYS*NUM_ACTIONS];
+	static DatagramPacket[] mOSCPackets = new DatagramPacket[NUM_KEYS * NUM_OSC];
 	static int mKeyAllowFullscreen = 0;
 	static boolean mAutoActivate = false;
 	static long mLongPressDelay, mDoublePressDelay;
 	static boolean mSkipSelf;
+	static DatagramSocket mSocket;
+	static boolean mOSC;
 	static final String PKG = "com.dexilog.smartkeyboard";
+	static Set<String> mOSCPackages;
 	public void Initialize()
 	{
 		if(initialized)
@@ -140,6 +148,7 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 	{
 		String[] keys = new String[]{"volup", "voldown", "camera", "sysr", "sysl"};
 		String[] actions = new String[]{"down", "up", "long", "double"};
+		String[] osc_actions = new String[]{"down", "up"};
 		mKeyAllowFullscreen = 0;
 		for(int i = 0; i < NUM_KEYS; i++)
 		{
@@ -176,10 +185,119 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 				}
 				mActionCallbacks[NUM_ACTIONS * i + j] = r;
 			}
+			for(int j = 0; j < NUM_OSC; j++)
+			{
+				String act = sp.getString("osc_"+ keys[i] + "_" + osc_actions[j], "");
+				String[] tokens = act.split(" ");
+				if(tokens.length < 1)
+					continue;
+				try{
+					String head = tokens[0];
+					String types = tokens[1];
+					int hlen = ((head.length() + 4)/ 4) * 4;
+					System.out.println("hlen " + hlen + "\n");
+					int tlen = ((types.length() + 5)/ 4) * 4;
+					System.out.println("tlen " + tlen + "\n");
+					int itok = 2;
+					int len = hlen + tlen;
+					for(int k = 0; k < types.length(); k++)
+					{
+						char c = types.charAt(k);
+						switch(c)
+						{
+							case 'i':
+							case 'f':
+							case 'S':
+							case 'c':
+							case 'm':
+								len += 4;
+								itok++;
+								break;
+							case 'h':
+							case 'd':
+								len += 8;
+								itok++;
+								break;
+							case 's':
+								len += ((tokens[itok++].replace("<space>", " ").getBytes().length + 4) / 4) * 4;
+								break;
+							default:
+						}
+					}
+					ByteBuffer buf = ByteBuffer.allocate(len);
+					byte[] h = head.getBytes();
+					buf.put(h);
+					buf.position(hlen);
+					h = ("," + types).getBytes();
+					System.out.println("buf " + h.length);
+	
+					buf.put(h);
+					int bufpos = hlen + tlen;
+					buf.position(bufpos);
+					itok = 2;
+					for(int k = 0; k < types.length(); k++)
+					{
+						char c = types.charAt(k);
+						switch(c)
+						{
+							case 'i':
+								buf.putInt(Integer.valueOf(tokens[itok++]));
+								break;
+							case 'f':
+								buf.putFloat(Float.valueOf(tokens[itok++]));
+								break;
+							case 'd':
+								buf.putDouble(Double.valueOf(tokens[itok++]));
+								break;
+							case 'h':
+								buf.putLong(Long.valueOf(tokens[itok++]));
+								break;
+							case 's':
+							{
+								int pos = buf.position();
+								byte[] s = tokens[itok++].replace("<space>", " ").getBytes();
+								int slen = ((s.length + 4) / 4) * 4;
+								buf.put(s);
+								buf.position(pos + slen);
+								break;
+							}
+							case 'c':
+							{
+								int pos = buf.position();
+								byte[] s = tokens[itok++].getBytes();
+								buf.put(s,0,1);
+								buf.position(pos + 4);
+							}
+							case 'S':
+							{
+								char c1 = tokens[itok++].charAt(0);
+								int ii = (int)c1;
+								buf.putInt(ii);
+							}
+							case 'm':
+							{
+								String s = tokens[itok++];
+								int l = s.length();
+								byte[] data = new byte[4];
+								for (int g = 0; g < l; g += 2) {
+									data[g/2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+											+ Character.digit(s.charAt(i+1), 16));
+								}
+								buf.put(data);
+							}
+						}
+					}
+					byte[] arr= buf.array();
+					Log.e(TAG, "registered OSC " + keys[i] + " " + arr.length );
+					mOSCPackets[NUM_OSC * i + j] = new DatagramPacket(arr, arr.length, InetAddress.getByName("127.0.0.1"), 9000);
+				}catch(Exception e){e.printStackTrace();}
+				//
+			}
 		}
 		mAutoActivate = sp.getBoolean("pico_auto_activate",false);
 		mLongPressDelay = Integer.valueOf(sp.getString("keymapper_long_press_delay", "400"));
 		mDoublePressDelay = Integer.valueOf(sp.getString("keymapper_double_press_delay", "300"));
+		mOSCPackages = new HashSet<String>(Arrays.asList(sp.getString("osc_packages", "com.vrchat.android").split(",")));
 	}
     public void sendKeyChar(char charCode) {
 		updateText();
@@ -293,6 +411,7 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 			if( newFullscreen != mFullscreen )
 			{
 				mFullscreen = newFullscreen;
+				mOSC = newFullscreen && mOSCPackages.contains(info.getPackageName().toString());
 				mInfo.eventTypes = newFullscreen ? TYPES_FULLSCREEN : TYPES_DEFAULT;
 				setServiceInfo(mInfo);
 				Log.e(TAG, "fullscreen: " + newFullscreen);
@@ -310,30 +429,43 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 		Log.e(TAG, "Key " + action + " " + keyCode + " " + mKeyAllowFullscreen);
 		if(action == 0)
 			updateForeground();
+		int key_idx = -1;
 
+		switch(keyCode)
 		{
-			int key_idx = -1;
-			boolean ret = false;
-			switch(keyCode)
+			case 24:
+				key_idx = 0;
+				break;
+			case 25:
+				key_idx = 1;
+				break;
+			case 27:
+				key_idx = 2;
+				break;
+			case 902:
+				key_idx = 3;
+				break;
+			case 901:
+				key_idx = 4;
+				break;
+		}
+		if(key_idx < 0)
+			return false;
+		if(mOSC)
+		{
+			DatagramPacket pkt = mOSCPackets[NUM_OSC * key_idx + action];
+			if(pkt != null)
 			{
-				case 24:
-					key_idx = 0;
-					break;
-				case 25:
-					key_idx = 1;
-					break;
-				case 27:
-					key_idx = 2;
-					break;
-				case 902:
-					key_idx = 3;
-					break;
-				case 901:
-					key_idx = 4;
-					break;
+				try{
+				mSocket.send(pkt);
+				}catch(Exception e){}
+				return true;
 			}
-			if(key_idx < 0)
-				return false;
+		}
+		{
+
+			boolean ret = false;
+
 			if(mFullscreen && ((1 << key_idx) & mKeyAllowFullscreen ) == 0 )
 				return false;
 			ActionCallback l = mActionCallbacks[NUM_ACTIONS * key_idx + ACTION_LONG];
@@ -527,7 +659,13 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 	
 		setServiceInfo(mInfo);
 		Initialize();
+		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+		StrictMode.setThreadPolicy(policy);
+		try{
+		mSocket = new DatagramSocket();
+		}catch(Exception e){}
 		loadSettings(PreferenceManager.getDefaultSharedPreferences(this));
+
 	
 	}
 
