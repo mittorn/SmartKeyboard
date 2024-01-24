@@ -183,7 +183,7 @@ public class MainKeyboardView extends View implements View.OnClickListener, Keyb
 	private boolean mAbortKey;
 	private Key mInvalidatedKey;
 	private Key mHoveredKey;
-	private int mHoveredKeyIndex;
+	private int mHoveredKeyIndex = NOT_A_KEY;
 	private Rect mClipRegion = new Rect(0, 0, 0, 0);
 	private boolean mPossiblePoly;
 	private SwipeTracker mSwipeTracker = new SwipeTracker();
@@ -1690,6 +1690,8 @@ MotionEvent.ACTION_DOWN, me.getX(), me.getY() , me.getMetaState());
 			int x = (int)event.getX();
 			int y = (int)event.getY();
 			int keyIndex = getKeyIndices(x, y, null);
+			if(keyIndex == mHoveredKeyIndex)
+				return false;
 			if(keyIndex == NOT_A_KEY)
 				mHoveredKey = null;
 			else
@@ -1700,6 +1702,8 @@ MotionEvent.ACTION_DOWN, me.getX(), me.getY() , me.getMetaState());
 		}
 		if(action == MotionEvent.ACTION_HOVER_EXIT)
 		{
+			if(mHoveredKeyIndex == NOT_A_KEY)
+				return;
 			mHoveredKey = null;
 			invalidateKey(mHoveredKeyIndex);
 			mHoveredKeyIndex = NOT_A_KEY;
