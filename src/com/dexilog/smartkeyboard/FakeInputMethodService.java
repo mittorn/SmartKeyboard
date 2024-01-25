@@ -632,7 +632,9 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 	{
 		String pkg = e.getPackageName().toString();
 		int t = e.getEventType();
-		// Log.e(TAG, e.toString());
+		//Log.e(TAG, e.toString());
+		if( t == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED && mFullscreen && pkg.equals("com.pvr.shortcut"))
+			updateForeground();
 
 		// do not handle events in editor
 		if(mSkipSelf && pkg.equals(PKG))
@@ -645,7 +647,7 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 			finishEditing();
 		}catch(Exception ee){}
 		if(info == null) return;
-		// Log.e(TAG, info.toString());
+		//Log.e(TAG, info.toString());
 		handleEditableNode(info, t);
 	}
 
