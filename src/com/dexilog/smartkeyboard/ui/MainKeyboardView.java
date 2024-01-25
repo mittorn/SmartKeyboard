@@ -1703,7 +1703,7 @@ MotionEvent.ACTION_DOWN, me.getX(), me.getY() , me.getMetaState());
 		if(action == MotionEvent.ACTION_HOVER_EXIT)
 		{
 			if(mHoveredKeyIndex == NOT_A_KEY)
-				return;
+				return false;
 			mHoveredKey = null;
 			invalidateKey(mHoveredKeyIndex);
 			mHoveredKeyIndex = NOT_A_KEY;
