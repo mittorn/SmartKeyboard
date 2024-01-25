@@ -699,11 +699,12 @@
 		<CheckBoxPreference android:title="Activate by click"
 			android:summary="Automaticly tigger keyboard" android:key="pico_auto_activate"
 			android:defaultValue="false" android:persistent="true" />
-		<EditTextPreference android:title="Long press delay" android:key="keymapper_long_press_delay"
-			android:defaultValue="400" android:persistent="true" />
-		<EditTextPreference android:title="Double press delay" android:key="keymapper_double_press_delay"
-			android:defaultValue="300" android:persistent="true" />
+
 		<PreferenceScreen android:title="Key bindings" android:summary="Main key bindings">
+			<EditTextPreference android:title="Long press delay" android:key="keymapper_long_press_delay"
+				android:defaultValue="400" android:persistent="true" />
+			<EditTextPreference android:title="Double press delay" android:key="keymapper_double_press_delay"
+				android:defaultValue="300" android:persistent="true" />
 			<PreferenceScreen android:title="VOLUME_UP">
 				<EditTextPreference android:title="Down" android:key="keymap_volup_down"
 					android:defaultValue="" android:persistent="true" />
@@ -769,6 +770,17 @@
 					android:key="keymap_sysl_fullscreen"
 					android:defaultValue="false" android:persistent="true" />
 			</PreferenceScreen>
+			<Preference android:title="@string/help" android:summary="@string/help_pico_keymap1"/>
+			<Preference android:title="" android:summary="@string/help_pico_keymap2"/>
+			<Preference android:title="" android:summary="@string/help_pico_keymap3"/>
+			<Preference android:title="" android:summary="@string/help_pico_keymap4"/>
+			<Preference android:title="" android:summary="@string/help_pico_keymap5"/>
+			<Preference android:title="" android:summary="@string/help_pico_keymap6"/>
+			<Preference android:title="" android:summary="@string/help_pico_keymap7"/>
+			<Preference android:title="" android:summary="@string/help_pico_keymap8"/>
+			<Preference android:title="" android:summary="@string/help_pico_keymap9"/>
+			<Preference android:title="" android:summary="@string/help_pico_keymap10"/>
+			<Preference android:title="" android:summary="@string/help_pico_keymap11"/>
 		</PreferenceScreen>
 		<PreferenceScreen android:title="OSC Override" android:summary="Map key events to OSC">
 			<EditTextPreference android:title="OSC address" android:key="osc_address"
@@ -795,7 +807,18 @@
 					android:defaultValue="" android:persistent="true" />
 			<EditTextPreference android:title="SYSTEM_LEFT down" android:key="osc_sysr_down"
 					android:defaultValue="" android:persistent="true" />
+			<Preference android:title="@string/help" android:summary="@string/help_pico_osc1"/>
+			<Preference android:title="" android:summary="@string/help_pico_osc2"/>
+			<Preference android:title="" android:summary="@string/help_pico_osc3"/>
+			<Preference android:title="" android:summary="@string/help_pico_osc4"/>
+			<Preference android:title="" android:summary="@string/help_pico_osc5"/>
+			<Preference android:title="" android:summary="@string/help_pico_osc6"/>
+			<Preference android:title="" android:summary="@string/help_pico_osc7"/>
 		</PreferenceScreen>
+		<Preference android:title="Accessibility settings">
+			<intent android:action="android.settings.ACCESSIBILITY_SETTINGS" />
+		</Preference>
+		<Preference android:title="@string/help" android:summary="@string/help_pico_common"/>
 	</PreferenceScreen>
 
 	<PreferenceScreen android:title="@string/advanced_settings">

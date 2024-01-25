@@ -450,4 +450,68 @@
 	<string name="custom_smileys">Custom smileys</string>
 	<string name="custom_smileys_summary">Instead of emojis, with long press on enter</string>
 	<string name="tamil">Tamil</string>
+	<string name="help_pico_keymap1">Set action name or URI scheme to map action on hardware button\n
+		Add <font color="red">\"+\"</font> before action name to keep default button action\n
+		<b>Supported actions:</b></string>
+	<string name="help_pico_keymap2">
+		<font color="red">\"keyboard\"</font>: open keyboard\n
+		<font color="red">\"empty\"</font>: do nothing (use to ignore button)\n
+		<font color="red">\"notify:(text)\"</font>: Show text in Voice Assistaint overlay for 5 seconds\n
+		<font color="red">\"shell:(command)\"</font>Run specified shell command</string>
+	<string  name="help_pico_keymap3">
+		<b>Using intent actions:</b>\n
+		Use <font color="green">\"App Manager\"</font> or <font color="green">\"Activity Manager\"</font> app to generate Intent URI</string>
+	<string name="help_pico_keymap4">In <font color="green">App Manager</font>:</string>
+	<string name="help_pico_keymap5">
+			* Select app from list\n
+			* Open Activities tab\n
+			* Long click on launch button on needed activity\n
+			* Copy url starting with <font color="blue">\"intent:\"</font></string>
+	<string name="help_pico_keymap6">
+		In <font color="green">Activity Manager</font>:\n
+			* Select app from list\n
+			* Long click on activity\n
+			* Pull up context menu and tap \"Launch activity with parameters\"</string>
+	<string name="help_pico_keymap7">
+			* Click Launch button\n
+			* Repeat first 3 steps and press \"History\" button in upper-right corner\n
+			* Long-click on last activity and select \"Export as URI\"</string>
+	<string name="help_pico_keymap8"><b>After you get URI, change schema to following:</b>\n
+		<font color="red">\"intent:\"</font>(no change)\n
+		Simply run application</string>
+	<string name="help_pico_keymap9">
+		<font color="red">\"wrap-far:\"</font>\n
+		Open application in default <b>\"far\"</b> window\n
+		<font color="red">\"wrap-fardialog:\"</font>\n
+		Open application in <b>\"far_dialog\"</b> window, it draws above default</string>
+		<string name="help_pico_keymap10">
+		<font color="red">\"wrap-near:\"</font>\n
+		Open application in <b>\"near\"</b> window, it draws in system launcher/settings overlay, this may work even while game running\n
+		<font color="red">\"wrap-dialog:\"</font>\n
+		Open application in <b>\"near_dialog\"</b> window, it draws above system launcher/settings overlay, works while game running too</string>
+	<string name="help_pico_keymap11"><font color="red">\"wrap-va:\"</font>\n
+		Open application in <b>\"Voice Assistaint\"</b> window, it draws everywhere and do not catch focus\n
+		<font color="red">WARNING: you cannot close VA windows with default button, app need to have Exit button</font>
+	</string>
+	<string name="help_pico_common">To enable keyboard, enable Accessiblity service in settings and set <font color="red">\"keyboard\"</font> action to hardware button</string>
+	<string name="help_pico_osc1">This allows to map buttons to OSC commands on this or another device\n
+		OSC can be mapped to UP/DOWN button actions, mapping only will be enabled in selected apps</string>
+	<string name="help_pico_osc2"><b>Command format:</b>\n
+		<font color="blue">[address](path) (signature) (arg1) (arg2) ...</font>\n
+	</string>
+	<string name="help_pico_osc3"><b>Signature format:</b>\ni - 32bit integer\nh - 64bit integer\nf - 32bit floating point number\n
+	</string>
+	<string name="help_pico_osc4">d - 64bit (double) floating point number\ns - string\nS - symbol\nc - char</string>
+	<string name="help_pico_osc5">m - 4 byte midi packet (8 digits hexadecimal)\nT - TRUE (no argment required)\nF - FALSE (no argment required)\nN - NIL (no argment required)
+	</string>
+	<string name="help_pico_osc6">I - INFINITUM (no value required)\n
+		<b>Argument format:</b>\n
+		<![CDATA["<space>"]]> replaced by space to allow strigns with spaces\n
+		For types with no argument required, skip arguments
+	</string>
+	<string name="help_pico_osc7"><b>Command examples:</b>\n
+		/chatbox/input sFF text<![CDATA["<space>"]]>with<![CDATA["<space>"]]>spaces\n
+		192.168.1.2:9000/input/Jump i 1\n
+	</string>
+		
 </resources>
