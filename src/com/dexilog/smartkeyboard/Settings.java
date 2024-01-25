@@ -47,6 +47,19 @@ public class Settings extends PreferenceActivity {
 	@Override public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
+		FakeInputMethodService.mSettingsChanged = true;
+	}
+
+	@Override public void onStop()
+	{
+		super.onStop();
+		FakeInputMethodService.mSettingsChanged = true;
+	}
+	@Override public void onDestroy()
+	{
+		super.onDestroy();
+		FakeInputMethodService.mSettingsChanged = true;
+		FakeInputMethodService.mSingleton.loadSettings(getPreferenceManager().getSharedPreferences());
 	}
 
 	@Override

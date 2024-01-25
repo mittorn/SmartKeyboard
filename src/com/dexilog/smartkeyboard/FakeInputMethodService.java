@@ -50,6 +50,7 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 	static boolean mOSC;
 	static final String PKG = "com.dexilog.smartkeyboard";
 	static Set<String> mOSCPackages;
+	static boolean mSettingsChanged = true;
 	public void Initialize()
 	{
 		if(initialized)
@@ -146,6 +147,9 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 	
 	protected void loadSettings(SharedPreferences sp)
 	{
+		if(!mSettingsChanged)
+			return;
+		mSettingsChanged = false;
 		String[] keys = new String[]{"volup", "voldown", "camera", "sysr", "sysl"};
 		String[] actions = new String[]{"down", "up", "long", "double"};
 		String[] osc_actions = new String[]{"down", "up"};
@@ -429,10 +433,14 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 			Rect bounds = new Rect();
 			info.getBoundsInScreen(bounds);
 			boolean newFullscreen = bounds.top == 0 && bounds.left == 0 && bounds.right == PICO_FULLSCREEN_WIDTH && bounds.bottom == PICO_FULLSCREEN_HEIGHT;
+			if(newFullscreen)
+				mOSC = newFullscreen && mOSCPackages.contains(info.getPackageName().toString());
+			else
+				mOSC = false;
 			if( newFullscreen != mFullscreen )
 			{
 				mFullscreen = newFullscreen;
-				mOSC = newFullscreen && mOSCPackages.contains(info.getPackageName().toString());
+
 				mInfo.eventTypes = newFullscreen ? TYPES_FULLSCREEN : TYPES_DEFAULT;
 				setServiceInfo(mInfo);
 				Log.e(TAG, "fullscreen: " + newFullscreen);
