@@ -132,16 +132,59 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 		}
 	}
 
-	class KeyboardAction extends ActionCallback
+	class SelectedNodeAction extends ActionCallback
 	{
 		FakeInputMethodService srv;
-		KeyboardAction(FakeInputMethodService s)
+		int action;
+		SelectedNodeAction(FakeInputMethodService s, int act)
 		{
 			srv = s;
+			action = act;
 		}
 		void cb()
 		{
-			srv.startEditing();
+			if(action == -1)
+				srv.startEditing();
+			else if(action == -2)
+			{
+				if(srv.mClickedNode != null)
+				{
+					try{
+					CharSequence t = srv.mClickedNode.getText();
+					android.text.ClipboardManager clipboard = (android.text.ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
+					clipboard.setText(t);
+					Intent intent = new Intent();
+					intent.setComponent(new android.content.ComponentName(PKG,PKG+".NotifyActivity"));
+					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					intent.putExtra("text", t.toString());
+					startActivity(intent);
+					}
+					catch(Exception e){e.printStackTrace();}
+				}
+			}
+			else if(srv.mSelectedNode != null)
+			{
+				try{
+					if(action == AccessibilityNodeInfo.ACTION_NEXT_HTML_ELEMENT)
+					{
+						Bundle arguments = new Bundle();
+						arguments.putString(AccessibilityNodeInfo.ACTION_ARGUMENT_HTML_ELEMENT_STRING, "BUTTON");
+						srv.mSelectedNode.performAction(action, arguments);
+					}
+					else if(action == AccessibilityNodeInfo.ACTION_NEXT_AT_MOVEMENT_GRANULARITY)
+					{
+						Bundle arguments = new Bundle();
+						arguments.putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT,
+										 AccessibilityNodeInfo.MOVEMENT_GRANULARITY_PARAGRAPH);
+						arguments.putBoolean(AccessibilityNodeInfo.ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN,
+											 false);
+						srv.mSelectedNode.performAction(action, arguments);
+					}
+					else
+						srv.mSelectedNode.performAction(action);
+				}
+				catch(Exception e){e.printStackTrace();}
+			}
 		}
 	}
 	
@@ -179,7 +222,23 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 				try {
 					final String KW_SH = "shell:";
 					if(act.equals("keyboard"))
-						r = new KeyboardAction(this);
+						r = new SelectedNodeAction(this, -1);
+					else if(act.equals("copy"))
+						r = new SelectedNodeAction(this, -2);
+					else if(act.equals("click"))
+						r = new SelectedNodeAction(this, AccessibilityNodeInfo.ACTION_CLICK);
+					else if(act.equals("dismiss"))
+						r = new SelectedNodeAction(this, AccessibilityNodeInfo.ACTION_DISMISS);
+					else if(act.equals("expand"))
+						r = new SelectedNodeAction(this, AccessibilityNodeInfo.ACTION_EXPAND);
+					else if(act.equals("collapse"))
+						r = new SelectedNodeAction(this, AccessibilityNodeInfo.ACTION_COLLAPSE);
+					else if(act.equals("nextg"))
+						r = new SelectedNodeAction(this, AccessibilityNodeInfo.ACTION_NEXT_AT_MOVEMENT_GRANULARITY);
+					else if(act.equals("nexth"))
+						r = new SelectedNodeAction(this, AccessibilityNodeInfo.ACTION_NEXT_HTML_ELEMENT);
+					else if(act.equals("select"))
+						r = new SelectedNodeAction(this, AccessibilityNodeInfo.ACTION_SELECT);
 					else if(act.equals("empty"))
 						r = new ActionCallback();
 					else if(act.startsWith("shell:"))
@@ -378,7 +437,7 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 	@Override
 	public void onInterrupt(){}
 
-	public AccessibilityNodeInfo mLastEditable, mSelectedNode;
+	public AccessibilityNodeInfo mLastEditable, mSelectedNode, mClickedNode;
 	CharSequence mLastText;
 	int mLastStart, mLastEnd;
 	// try to apply text to node (true on success)
@@ -640,7 +699,7 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 	{
 		String pkg = e.getPackageName().toString();
 		int t = e.getEventType();
-		//Log.e(TAG, e.toString());
+		Log.e(TAG, e.toString());
 		if( t == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED && mFullscreen && pkg.equals("com.pvr.shortcut"))
 			updateForeground();
 
@@ -655,7 +714,10 @@ public class FakeInputMethodService extends AccessibilityService // AbstractInpu
 			finishEditing();
 		}catch(Exception ee){}
 		if(info == null) return;
-		//Log.e(TAG, info.toString());
+		if(t == AccessibilityEvent.TYPE_VIEW_HOVER_ENTER || t == AccessibilityEvent.TYPE_VIEW_CLICKED)
+			if(info.getText() != null)
+				mClickedNode = info;
+		Log.e(TAG, info.toString());
 		handleEditableNode(info, t);
 	}
 
