@@ -799,13 +799,13 @@
 					android:defaultValue="" android:persistent="true" />
 			<EditTextPreference android:title="CAMERA down" android:key="osc_camera_down"
 					android:defaultValue="" android:persistent="true" />
-			<EditTextPreference android:title="SYSTEM_RIGHT up" android:key="osc_sysl_up"
+			<EditTextPreference android:title="SYSTEM_RIGHT up" android:key="osc_sysr_up"
 					android:defaultValue="" android:persistent="true" />
 			<EditTextPreference android:title="SYSTEM_RIGHT down" android:key="osc_sysr_down"
 					android:defaultValue="" android:persistent="true" />
 			<EditTextPreference android:title="SYSTEM_LEFT up" android:key="osc_sysl_up"
 					android:defaultValue="" android:persistent="true" />
-			<EditTextPreference android:title="SYSTEM_LEFT down" android:key="osc_sysr_down"
+			<EditTextPreference android:title="SYSTEM_LEFT down" android:key="osc_sysl_down"
 					android:defaultValue="" android:persistent="true" />
 			<Preference android:title="@string/help" android:summary="@string/help_pico_osc1"/>
 			<Preference android:title="" android:summary="@string/help_pico_osc2"/>
