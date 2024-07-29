@@ -681,10 +681,8 @@ public class Keyboard {
 	 */
 	public Keyboard(Context context, int xmlLayoutResId, int modeId, boolean isPortrait,
 			boolean includeArrows, boolean numbersTop, EmojiCategories emojiCategories) {
-		
-		DisplayMetrics dm = context.getResources().getDisplayMetrics();
-		mDisplayWidth = 1920;//dm.widthPixels;
-		mDisplayHeight = dm.heightPixels;
+		mDisplayWidth = GlobalResources.mKeyboardWidth;
+		mDisplayHeight = GlobalResources.mKeyboardScreenHeight;
 		//Log.d(TAG, "keyboard's display metrics:" + dm);
 		mNumbersTop = numbersTop;
 		mEmojiCategories = emojiCategories;

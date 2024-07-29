@@ -64,6 +64,9 @@ public final class PicoActivity extends Activity {
 			}
 		else
 		{
+			Display d = getWindow().getWindowManager().getDefaultDisplay();
+			com.dexilog.smartkeyboard.keyboard.GlobalResources.mKeyboardWidth = d.getWidth();
+			com.dexilog.smartkeyboard.keyboard.GlobalResources.mKeyboardScreenHeight = d.getHeight();
 			FakeInputMethodService.mSingleton.Initialize();
 			onStartService();
 		}

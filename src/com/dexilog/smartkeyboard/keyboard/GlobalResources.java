@@ -20,6 +20,8 @@ public class GlobalResources {
 
 	public static int mKeyHeight = 50;  // portrait height
 	public static int mKeyHeightLandscape = 50;
+	public static int mKeyboardWidth = 1920;
+	public static int mKeyboardScreenHeight = 1080;
 	public static boolean mHideComma = false;
 	public static boolean mHidePeriod = false;
 	
