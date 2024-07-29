@@ -446,7 +446,7 @@
 			android:dialogTitle="@string/opacity" android:key="opacity_key"
 			android:persistent="true" android:defaultValue="75" />
 		<com.dexilog.smartkeyboard.ui.preferences.SeekBarPref
-			android:title="Hovered trasparency" android:summary="Key transparency"
+			android:title="Hovered trasparency" android:summary="Hovered key transparency"
 			android:dialogTitle="@string/opacity" android:key="opacity_hkey"
 			android:persistent="true" android:defaultValue="100" />
 		<CheckBoxPreference android:title="@string/cursor_volume"
