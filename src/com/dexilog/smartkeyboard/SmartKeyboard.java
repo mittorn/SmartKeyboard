@@ -340,12 +340,12 @@ public class SmartKeyboard extends FakeInputMethodService implements
 		mSwipeUp = swipeGestures.getSwipeAction(sp.getString("swipe_up", "Shift"));
 		mSwipeDown = swipeGestures.getSwipeAction(sp.getString("swipe_down", "Close"));
 		final String curLanguage = sp.getString("curLang", "EN");
-		final String skin = sp.getString(KeyboardPreferences.PREF_SKIN, "Black");
+		final String skin = sp.getString(KeyboardPreferences.PREF_SKIN, "Gingerbread");
 		mSkinLoader.loadSkin(skin);
 		mOpacity = sp.getInt(KeyboardPreferences.PREF_TRANSPARENCY, 50);
 		mBgOpacity = sp.getInt("opacity_bg", 0);
-		mKeyOpacity = sp.getInt("opacity_key", 37);
-		mHKeyOpacity = sp.getInt("opacity_hkey", 50);
+		mKeyOpacity = sp.getInt("opacity_key", 75);
+		mHKeyOpacity = sp.getInt("opacity_hkey", 100);
 		final int volume = sp.getInt(KeyboardPreferences.PREF_VOLUME, 100);
 		mVolume = (float) Math.exp((volume - 100) / 20);
 		mMicButton = sp.getBoolean(KeyboardPreferences.PREF_MIC_BUTTON, true);
@@ -355,7 +355,7 @@ public class SmartKeyboard extends FakeInputMethodService implements
 		mSmileyMode = Integer.parseInt(sp.getString(KeyboardPreferences.PREF_SMILEY_KEY, "0"));
 		mDebug = true;//sp.getBoolean(KeyboardPreferences.PREF_DEBUG, false);
 		mShowTouchPoints = sp.getBoolean(KeyboardPreferences.PREF_TOUCH_POINTS, false);
-		mShowPreview = sp.getBoolean(KeyboardPreferences.PREF_SHOW_PREVIEW, true);
+		mShowPreview = sp.getBoolean(KeyboardPreferences.PREF_SHOW_PREVIEW, false);
 		mPortraitMode = Integer.parseInt(sp.getString(KeyboardPreferences.PREF_PORTRAIT_MODE, "0"));
 		mSpaceWhenPick = sp.getBoolean(KeyboardPreferences.PREF_SPACE_WHEN_PICK, false);
 		mSwapPunctuationSpace = sp.getBoolean(KeyboardPreferences.PREF_SWAP_PUNCTUATION_SPACE,
@@ -371,7 +371,7 @@ public class SmartKeyboard extends FakeInputMethodService implements
 		mMultitapInterval = sp.getInt(KeyboardPreferences.PREF_MULTITAP_INTERVAL, 80) * 10;
 		mSwipeFactor = 100 - sp.getInt(KeyboardPreferences.PREF_SWIPE_FACTOR, 70);
 		mEnterSendsSMS = sp.getBoolean(KeyboardPreferences.PREF_ENTER_SENDS_SMS, false);
-		mNoAltPreview = sp.getBoolean(KeyboardPreferences.PREF_NO_ALT_PREVIEW, false);
+		mNoAltPreview = sp.getBoolean(KeyboardPreferences.PREF_NO_ALT_PREVIEW, true);
 		final String latinLayout = sp.getString(KeyboardPreferences.PREF_LATIN_LAYOUT, "");
 		mRTLSuggestions = sp.getBoolean(KeyboardPreferences.PREF_RTL_SUGGESTIONS, true);
 		mDomainKey = Integer.parseInt(sp.getString(KeyboardPreferences.PREF_DOMAIN_KEY, "0"));
@@ -433,7 +433,7 @@ public class SmartKeyboard extends FakeInputMethodService implements
 		boolean isTablet = (mScreenLayout & 4) != 0;
 
 		int newKeyHeight = sp.getInt(KeyboardPreferences.PREF_KEY_HEIGHT, 50);
-		int newKeyHeightLandscape = sp.getInt(KeyboardPreferences.PREF_KEY_HEIGHT_LANDSCAPE, 50);
+		int newKeyHeightLandscape = sp.getInt(KeyboardPreferences.PREF_KEY_HEIGHT_LANDSCAPE, 73);
 		// Adjust height on tablets
 		if (isTablet) {
 			newKeyHeight = newKeyHeight * 3 / 2;
@@ -2656,9 +2656,9 @@ public class SmartKeyboard extends FakeInputMethodService implements
 		final SharedPreferences sp = mSharedPref;
 		super.loadSettings(sp); // FakeInputMethodService
 		mAutoCap = sp.getBoolean(KeyboardPreferences.PREF_AUTO_CAP, true);
-		mQuickFixes = sp.getBoolean(KeyboardPreferences.PREF_QUICK_FIXES, true);
+		mQuickFixes = sp.getBoolean(KeyboardPreferences.PREF_QUICK_FIXES, false);
 		mShowSuggestions = sp.getBoolean(KeyboardPreferences.PREF_SHOW_SUGGESTIONS, true);
-		final boolean autoComplete = sp.getBoolean(KeyboardPreferences.PREF_AUTO_COMPLETE, true)
+		final boolean autoComplete = sp.getBoolean(KeyboardPreferences.PREF_AUTO_COMPLETE, false)
 				& isSuggestionOn();
 		mAutoCorrectOn = mSuggest != null && (autoComplete || mQuickFixes);
 		mCorrectionMode = autoComplete ? Suggest.CORRECTION_FULL

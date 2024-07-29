@@ -80,7 +80,7 @@ public class SkinList extends Activity implements OnKeyboardActionListener, OnIt
 		final Configuration conf = res.getConfiguration();
 		
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-		String skin = mPrefs.getString(KeyboardPreferences.PREF_SKIN, "iPhone");
+		String skin = mPrefs.getString(KeyboardPreferences.PREF_SKIN, "Gingerbread");
 		
 		mGetSkins = res.getString(R.string.get_skins);
 		

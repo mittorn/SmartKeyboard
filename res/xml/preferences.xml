@@ -432,7 +432,7 @@
 			android:persistent="true" android:defaultValue="true" />
 		<CheckBoxPreference android:title="@string/show_preview"
 			android:key="show_preview" android:summary="@string/show_preview_summary"
-			android:persistent="true" android:defaultValue="true" />
+			android:persistent="true" android:defaultValue="false" />
 		<com.dexilog.smartkeyboard.ui.preferences.SeekBarPref
 			android:title="@string/transparency" android:summary="@string/transparency_summary"
 			android:dialogTitle="@string/opacity" android:key="opacity"
@@ -467,9 +467,9 @@
 			android:persistent="true" android:defaultValue="true" />
 		<CheckBoxPreference android:title="@string/alt_symbols"
 			android:key="alt_symbols" android:summary="@string/alt_symbols_summary"
-			android:persistent="true" android:defaultValue="false" />
+			android:persistent="true" android:defaultValue="true" />
 		<CheckBoxPreference android:title="@string/more_symbols" android:key="more_symbols"
-			android:summary="@string/more_symbols_summary" android:persistent="true" android:defaultValue="false" />
+			android:summary="@string/more_symbols_summary" android:persistent="true" android:defaultValue="true" />
 		<com.dexilog.smartkeyboard.ui.preferences.SeekBarPref
 			android:title="@string/longpress_duration" android:summary="@string/longpress_duration_summary"
 			android:dialogTitle="@string/longpress_duration" android:key="longpress_duration"
@@ -535,7 +535,7 @@
 			android:defaultValue="true" android:persistent="true" />
 		<CheckBoxPreference android:key="quick_fixes"
 			android:title="@string/quick_fixes" android:summary="@string/quick_fixes_summary"
-			android:persistent="true" android:defaultValue="true" />
+			android:persistent="true" android:defaultValue="false" />
 		<CheckBoxPreference android:key="show_suggestions"
 			android:title="@string/show_suggestions" android:summary="@string/show_suggestions_summary"
 			android:persistent="true" android:defaultValue="true" />
@@ -544,7 +544,7 @@
 			android:persistent="true" android:defaultValue="false" android:dependency="show_suggestions" />
 		<CheckBoxPreference android:key="auto_complete"
 			android:title="@string/auto_complete" android:summary="@string/auto_complete_summary"
-			android:persistent="true" android:defaultValue="true"
+			android:persistent="true" android:defaultValue="false"
 			android:dependency="show_suggestions" />
 		<CheckBoxPreference android:key="swap_punctuation_space"
 			android:title="@string/swap_punctuation_space" android:summary="@string/swap_punctuation_space_summary"
@@ -846,7 +846,7 @@
 			android:persistent="true" android:defaultValue="false" />
 		<CheckBoxPreference android:title="@string/no_alt_preview"
 			android:summary="@string/no_alt_preview_summary" android:key="no_alt_preview"
-			android:persistent="true" android:defaultValue="false" />
+			android:persistent="true" android:defaultValue="true" />
 		<CheckBoxPreference android:title="@string/dynamic_resizing"
 			android:summary="@string/dynamic_resizing_summary" android:key="dynamic_resizing"
 			android:persistent="true" android:defaultValue="true" />

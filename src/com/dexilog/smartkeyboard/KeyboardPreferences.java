@@ -116,8 +116,8 @@ public class KeyboardPreferences {
     public boolean customSmileys;
 
     public void initialize(SharedPreferences sp) {
-        altSymbols = sp.getBoolean(PREF_ALT_SYMBOLS, false);
-        moreSymbols = sp.getBoolean(PREF_MORE_SYMBOLS, false);
+        altSymbols = sp.getBoolean(PREF_ALT_SYMBOLS, true);
+        moreSymbols = sp.getBoolean(PREF_MORE_SYMBOLS, true);
         displayAlt = sp.getBoolean(PREF_DISPLAY_ALT, true);
         micAboveComma = sp.getBoolean(PREF_MIC_ABOVE_COMMA, false);
         customSmileys = sp.getBoolean(PREF_CUSTOM_SMILEYS, false);

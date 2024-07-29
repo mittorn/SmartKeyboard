@@ -97,9 +97,9 @@ public class Calibration extends Activity implements OnKeyboardActionListener {
 		boolean isTablet = (mScreenLayout & 4) != 0;
 				
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-		final String skin = sp.getString(KeyboardPreferences.PREF_SKIN, "iPhone");
+		final String skin = sp.getString(KeyboardPreferences.PREF_SKIN, "Gingerbread");
 		GlobalResources.mKeyHeight = sp.getInt(KeyboardPreferences.PREF_KEY_HEIGHT, 50);
-		GlobalResources.mKeyHeightLandscape = sp.getInt(KeyboardPreferences.PREF_KEY_HEIGHT_LANDSCAPE, 50);
+		GlobalResources.mKeyHeightLandscape = sp.getInt(KeyboardPreferences.PREF_KEY_HEIGHT_LANDSCAPE, 73);
 	    
 		// Adjust height on tablets
 		if (isTablet) {

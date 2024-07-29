@@ -53,7 +53,7 @@ public class KeyHeightDialog extends DialogPreference {
     	
     	// Set initial values
     	mBarPortrait.setProgress(getPersistedInt(50));
-    	mBarLandscape.setProgress(mPref.getInt(KeyboardPreferences.PREF_KEY_HEIGHT_LANDSCAPE, 50));
+    	mBarLandscape.setProgress(mPref.getInt(KeyboardPreferences.PREF_KEY_HEIGHT_LANDSCAPE, 73));
     	
         builder.setView(view); 
     }
