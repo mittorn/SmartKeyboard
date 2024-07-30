@@ -329,7 +329,7 @@ public class SmartKeyboard extends FakeInputMethodService implements
 		// Retrieve preferences
 		SharedPreferences sp = mSharedPref;
 		keyboardPreferences.initialize(sp);
-		mVibrateOn = sp.getBoolean(KeyboardPreferences.PREF_VIBRATE_ON, true);
+		mVibrateOn = sp.getBoolean(KeyboardPreferences.PREF_VIBRATE_ON, false);
 		if (mVibrateOn) {
 			mVibrateDuration = new VibratorSettings(sp).getDurationMs();
 			mSpaceAlert = sp.getBoolean(KeyboardPreferences.PREF_SPACE_ALERT, false);
@@ -348,7 +348,7 @@ public class SmartKeyboard extends FakeInputMethodService implements
 		mHKeyOpacity = sp.getInt("opacity_hkey", 100);
 		final int volume = sp.getInt(KeyboardPreferences.PREF_VOLUME, 100);
 		mVolume = (float) Math.exp((volume - 100) / 20);
-		mMicButton = sp.getBoolean(KeyboardPreferences.PREF_MIC_BUTTON, true);
+		mMicButton = sp.getBoolean(KeyboardPreferences.PREF_MIC_BUTTON, false);
 		voiceInputController.mRestartVoice = sp.getBoolean(KeyboardPreferences.PREF_RESTART_VOICE, false);
 		voiceInputController.mVoiceBest = sp.getBoolean(KeyboardPreferences.PREF_VOICE_BEST, false);
 		voiceInputController.mLegacyVoice = sp.getBoolean(KeyboardPreferences.PREF_LEGACY_VOICE, false);
@@ -387,7 +387,7 @@ public class SmartKeyboard extends FakeInputMethodService implements
 				getResources().getBoolean(R.bool.default_no_landscape_fullscreen));
 		mPortraitFullscreen = sp.getBoolean(KeyboardPreferences.PREF_PORTRAIT_FULLSCREEN, false);
 		int arrowsStyle = Integer
-				.parseInt(sp.getString(KeyboardPreferences.PREF_ARROWS_STYLE, "1"));
+				.parseInt(sp.getString(KeyboardPreferences.PREF_ARROWS_STYLE, "2"));
 		boolean t9LengthPriority = sp.getBoolean(KeyboardPreferences.PREF_T9_LENGTH_PRIORITY, true);
 		mSuggestNumbers = sp.getBoolean(KeyboardPreferences.PREF_SUGGEST_NUMBERS, false);
 		mAskEnglishDic = sp.getBoolean(KeyboardPreferences.PREF_ASK_ENGLISH_DIC, true);
@@ -404,11 +404,11 @@ public class SmartKeyboard extends FakeInputMethodService implements
 		mReCorrectionEnabled = sp.getBoolean(KeyboardPreferences.PREF_RECORRECTION_ENABLED,
 				getResources().getBoolean(R.bool.default_recorrection_enabled));
 
-		final boolean enableArrows = sp.getBoolean(KeyboardPreferences.PREF_ENABLE_ARROWS, false);
+		final boolean enableArrows = sp.getBoolean(KeyboardPreferences.PREF_ENABLE_ARROWS, true);
 		final boolean t9NextKey = sp.getBoolean(KeyboardPreferences.PREF_T9_NEXT_KEY, true);
 		final boolean t9Prediction = sp.getBoolean(KeyboardPreferences.PREF_T9_PREDICTION, true);
 		final int arrowsMain = Integer.parseInt(sp.getString(KeyboardPreferences.PREF_ARROWS_MAIN,
-				"0"));
+				"3"));
 		final int numbersTop = Integer.parseInt(sp.getString(KeyboardPreferences.PREF_NUMBERS_TOP,
 				"0"));
 		final boolean altCompact = sp.getBoolean(KeyboardPreferences.PREF_ALT_COMPACT, false);

@@ -423,7 +423,7 @@
 		<ListPreference android:title="@string/arrows_main"
 			android:key="show_arrows_main" android:summary="@string/arrows_main_summary"
 			android:entries="@array/arrows_main" android:entryValues="@array/arrows_main_values"
-			android:persistent="true" android:defaultValue="0" />
+			android:persistent="true" android:defaultValue="3" />
 		<CheckBoxPreference android:key="suggest_hard"
 			android:title="@string/physical_kbd" android:summary="@string/physical_kbd_summary"
 			android:persistent="true" android:defaultValue="false" />
@@ -454,11 +454,11 @@
 			android:persistent="true" android:defaultValue="false" />
 		<CheckBoxPreference android:title="@string/enable_arrows"
 			android:key="enable_arrows" android:summary="@string/enable_arrows_summary"
-			android:persistent="true" android:defaultValue="false" />
+			android:persistent="true" android:defaultValue="true" />
 		<ListPreference android:key="arrows_style" android:title="@string/arrows_style"
 		 	android:summary="@string/arrows_style_summary" android:entries="@array/arrows_styles"
 			android:entryValues="@array/arrows_values" android:dialogTitle="@string/arrows_style"
-			android:persistent="true" android:defaultValue="1" />
+			android:persistent="true" android:defaultValue="2" />
 		<CheckBoxPreference android:title="@string/always_caps"
 			android:key="always_caps" android:summary="@string/always_caps_summary"
 			android:persistent="true" android:defaultValue="false" />
@@ -638,7 +638,7 @@
 	<PreferenceScreen android:title="@string/voice_input">
 		<CheckBoxPreference android:title="@string/mic_button"
 			android:key="mic_button" android:summary="@string/mic_button_summary"
-			android:persistent="true" android:defaultValue="true" />
+			android:persistent="true" android:defaultValue="false" />
 		<CheckBoxPreference android:title="@string/mic_above_comma"
 							android:dependency="mic_button"
 							android:key="mic_above_comma" android:summary="@string/mic_above_comma_summary"
@@ -670,7 +670,7 @@
 			android:persistent="true" android:defaultValue="Android" android:dependency="sound_on" />
 		<CheckBoxPreference android:title="@string/vibrate"
 			android:summary="@string/vibrate_summary" android:key="vibrate"
-			android:defaultValue="true" android:persistent="true" />
+			android:defaultValue="false" android:persistent="true" />
 		<com.dexilog.smartkeyboard.ui.preferences.SeekBarPref
 			android:key="vibrator_duration_ms" android:title="@string/vibrate_duration"
 			android:dialogTitle="@string/vibrate_duration" android:dependency="vibrate"
